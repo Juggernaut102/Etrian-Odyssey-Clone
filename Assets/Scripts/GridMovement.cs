@@ -11,6 +11,7 @@ public class GridMovement : MonoBehaviour
 
     private InputSystem_Actions controls;
     private bool isMoving = false;
+    private Vector2 inputVector;
 
     private void Awake()
     {
@@ -20,36 +21,35 @@ public class GridMovement : MonoBehaviour
     private void OnEnable()
     {
         controls.Player.Enable();
-        controls.Player.Move.performed += OnMoveInput;   // Subscribe custom method to the event signature
+        controls.Player.Move.performed += ctx => inputVector = ctx.ReadValue<Vector2>();    // Subscribe custom method to the event signature
+        controls.Player.Move.canceled += ctx => inputVector = Vector2.zero;                 // Reset input when movement is canceled
     }
 
     private void OnDisable()
     {
+        controls.Player.Move.performed -= ctx => inputVector = ctx.ReadValue<Vector2>();   // Unsubscribe to prevent memory leaks
+        controls.Player.Move.canceled -= ctx => inputVector = Vector2.zero;
         controls.Player.Disable();
-        controls.Player.Move.performed -= OnMoveInput;   // Unsubscribe to prevent memory leaks
     }
 
     // Beginning of custom method that handles movement input
-    private void OnMoveInput(InputAction.CallbackContext context)
+    void Update()
     {
         if (isMoving) return; // Prevent starting a new move while already moving
 
-        Vector2 input = context.ReadValue<Vector2>(); 
-
-        if (input == null) return;
-
-        if (Mathf.Abs(input.y) > 0.5f)
+        if (Mathf.Abs(inputVector.y) > 0.5f)
         {
-            Vector3 direction = transform.forward * Mathf.Sign(input.y) * gridSize; // Move forward/backward based on input
-            StartCoroutine(MovePlayer(direction));  // Coroutines allow for smooth movement over time without blocking the main thread
+            Vector3 direction = transform.forward * Mathf.Sign(inputVector.y) * gridSize; // Move forward/backward based on input
+            StartCoroutine(MovePlayer(direction));
         }
-        else if (Mathf.Abs(input.x) > 0.5f)
+        else if (Mathf.Abs(inputVector.x) > 0.5f)
         {
-            float angle = Mathf.Sign(input.x) * 90f; // Rotate left/right based on input
+            float angle = Mathf.Sign(inputVector.x) * 90f; // Rotate left/right based on input
             StartCoroutine(RotatePlayer(angle));
         }
     }
 
+    // Coroutine definitions for smooth movement to the target position
     System.Collections.IEnumerator MovePlayer(Vector3 direction)
     {
         isMoving = true;
