@@ -20,16 +20,22 @@ public class GridMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        controls.Player.Enable();
-        controls.Player.Move.performed += ctx => inputVector = ctx.ReadValue<Vector2>();    // Subscribe custom method to the event signature
-        controls.Player.Move.canceled += ctx => inputVector = Vector2.zero;                 // Reset input when movement is canceled
+        if (controls != null)
+        {
+            controls.Player.Enable();
+            controls.Player.Move.performed += ctx => inputVector = ctx.ReadValue<Vector2>();    // Subscribe custom method to the event signature
+            controls.Player.Move.canceled += ctx => inputVector = Vector2.zero;                 // Reset input when movement is canceled
+        }
     }
 
     private void OnDisable()
     {
-        controls.Player.Move.performed -= ctx => inputVector = ctx.ReadValue<Vector2>();   // Unsubscribe to prevent memory leaks
-        controls.Player.Move.canceled -= ctx => inputVector = Vector2.zero;
-        controls.Player.Disable();
+        if (controls != null)
+        {
+            controls.Player.Move.performed -= ctx => inputVector = ctx.ReadValue<Vector2>();   // Unsubscribe to prevent memory leaks
+            controls.Player.Move.canceled -= ctx => inputVector = Vector2.zero;
+            controls.Player.Disable();
+        }        
     }
 
     // Beginning of custom method that handles movement input
@@ -55,12 +61,16 @@ public class GridMovement : MonoBehaviour
         isMoving = true;
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = startPosition + direction;
+
         float elapsedTime = 0f;
         float moveDuration = gridSize / moveSpeed;
+       
 
         while (elapsedTime < moveDuration)
         {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveDuration);
+            float linearProgress = elapsedTime / moveDuration; // Calculate linear progress (0 to 1)
+            float easedProgress = Mathf.SmoothStep(0f, 1f, linearProgress);  // Reshape it into an S-Curve for acceleration & deceleration
+            transform.position = Vector3.Lerp(startPosition, targetPosition, easedProgress);
             elapsedTime += Time.deltaTime;
             yield return null; // Wait for the next frame
         }
@@ -79,7 +89,9 @@ public class GridMovement : MonoBehaviour
 
         while (elapsedTime < rotateDuration)
         {
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsedTime / rotateDuration);
+            float linearProgress = elapsedTime / rotateDuration;
+            float easedProgress = Mathf.SmoothStep(0f, 1f, linearProgress);
+            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, easedProgress);
             elapsedTime += Time.deltaTime;
             yield return null; // Wait for the next frame
         }
