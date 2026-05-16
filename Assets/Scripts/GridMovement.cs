@@ -5,9 +5,9 @@ using UnityEngine.InputSystem;
 public class GridMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float rotateSpeed = 180f;
-    [SerializeField] private float gridSize = 2f;
+    [SerializeField] private float gridSize = 4f;
 
     private InputSystem_Actions controls;
     private bool isMoving = false;
