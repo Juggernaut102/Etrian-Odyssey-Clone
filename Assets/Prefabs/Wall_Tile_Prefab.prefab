@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6928618647650122301}
   - component: {fileID: 4275349394696052943}
   - component: {fileID: 3664198300479359044}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Visual_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1229598571693590739}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall_Tile_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}

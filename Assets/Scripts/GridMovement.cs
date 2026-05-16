@@ -8,6 +8,7 @@ public class GridMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float rotateSpeed = 180f;
     [SerializeField] private float gridSize = 4f;
+    [SerializeField] private LayerMask wallLayer;
 
     private InputSystem_Actions controls;
     private bool isMoving = false;
@@ -46,7 +47,22 @@ public class GridMovement : MonoBehaviour
         if (Mathf.Abs(inputVector.y) > 0.5f)
         {
             Vector3 direction = transform.forward * Mathf.Sign(inputVector.y) * gridSize; // Move forward/backward based on input
-            StartCoroutine(MovePlayer(direction));
+            Vector3 startPosition = transform.position;
+            Vector3 targetPosition = startPosition + direction;
+
+            // Collision detection
+            // We lift the start/end points up slightly (Vector3.up * 0.5f) so the line doesn't scrape the floor
+            Vector3 lineStart = startPosition + (Vector3.up * 0.5f);
+            Vector3 lineEnd = targetPosition + (Vector3.up * 0.5f);
+            if (Physics.Linecast(lineStart, lineEnd, wallLayer)) 
+            {
+                // Todo: Add wall-hitting audio
+                Debug.Log("Hitting wall, no movement!");
+            }
+            else
+            {
+                StartCoroutine(MovePlayer(direction));
+            }
         }
         else if (Mathf.Abs(inputVector.x) > 0.5f)
         {
