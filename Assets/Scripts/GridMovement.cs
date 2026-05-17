@@ -42,6 +42,8 @@ public class GridMovement : MonoBehaviour
     // Beginning of custom method that handles movement input
     void Update()
     {
+        if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return; // Only allow movement when in Playing state
+
         if (isMoving) return; // Prevent starting a new move while already moving
 
         if (Mathf.Abs(inputVector.y) > 0.5f)

@@ -3,7 +3,34 @@ using UnityEngine;
 // Singleton class used to manage game audio, such as background music and sound effects. This class can be expanded to include methods for playing specific sounds, adjusting volume, and handling audio transitions.
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance { get; private set; }
+    private static AudioManager instance;
+
+    // Property to access the singleton instance of GameManager. If it doesn't exist, it will attempt to find one in the scene or create a new one from a prefab.
+
+    public static AudioManager Instance 
+    { 
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindFirstObjectByType<AudioManager>();
+                if (instance == null)
+                {
+                    GameObject prefab = Resources.Load<GameObject>("GameRoot");
+                    if (prefab != null)
+                    {
+                        GameObject obj = Instantiate(prefab);
+                        instance = obj.GetComponent<AudioManager>();
+                    }
+                    else
+                    {
+                        Debug.Log("Can't find GameRoot prefab in Resources folder! Please create one and add the AudioManager component to it.");
+                    }
+                }
+            }
+            return instance;
+        }
+    }
 
     [Header("Audio Source Speaker")]
     [SerializeField] private AudioSource bgmSpeaker;
@@ -19,14 +46,14 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
+        if (instance == null)
         {
-            Instance = this;
-            DontDestroyOnLoad(this.gameObject); // Persist across scenes
+            instance = this;
+            DontDestroyOnLoad(gameObject); // Persist across scenes
         }
         else
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 
