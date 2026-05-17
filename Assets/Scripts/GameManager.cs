@@ -37,7 +37,8 @@ public class GameManager : MonoBehaviour
     public enum GameState
     {
         TitleScreen,
-        Playing,
+        Explore,
+        Battle,
         Paused,
         GameOver
     }
@@ -72,7 +73,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            UpdateGameState(GameState.Playing);
+            UpdateGameState(GameState.Explore);
         }
     }
 
@@ -88,8 +89,11 @@ public class GameManager : MonoBehaviour
             case GameState.TitleScreen:
                 HandleTitleScreen();
                 break;
-            case GameState.Playing:
-                HandlePlaying();
+            case GameState.Explore:
+                HandleExplore();
+                break;
+            case GameState.Battle:
+                HandleBattle();
                 break;
             case GameState.Paused:
                 HandlePaused();
@@ -107,21 +111,36 @@ public class GameManager : MonoBehaviour
     private void HandleTitleScreen()
     {
         Time.timeScale = 0f; // Pause game time on title screen
+        if (UiManager.Instance != null) UiManager.Instance.SetTitleUI();
+        Debug.Log("Going to title screen!");
     }
 
-    private void HandlePlaying()
+    private void HandleExplore()
     {
         Time.timeScale = 1f; // Ensure game time is running
+        if (UiManager.Instance != null) UiManager.Instance.SetExplorationHUD();
+        Debug.Log("Beginnning exploration!");
+
+    }
+
+    private void HandleBattle()
+    {
+        Time.timeScale = 1f; // Ensure game time is running(?)
+        if (UiManager.Instance != null) UiManager.Instance.SetBattleHUD();
+        Debug.Log("Entering battle!");
     }
 
     private void HandlePaused()
     {
         Time.timeScale = 0f; // Pause game time when paused
+        if (UiManager.Instance != null) UiManager.Instance.SetMenuUI();
+        Debug.Log("Menu opened!");
     }
 
     private void HandleGameOver()
     {
         Time.timeScale = 0f; // Pause game time on game over
+        if (UiManager.Instance != null) UiManager.Instance.SetGameOverUI();
         Debug.Log("Player Died! Game Over.");
     }
 
@@ -133,7 +152,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartGame() 
     {
-        UpdateGameState(GameState.Playing);
+        UpdateGameState(GameState.Explore);
         SceneManager.LoadScene(firstLevelName);
     }
 
