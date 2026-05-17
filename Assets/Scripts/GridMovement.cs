@@ -74,13 +74,15 @@ public class GridMovement : MonoBehaviour
     System.Collections.IEnumerator MovePlayer(Vector3 direction)
     {
         isMoving = true;
+
+        AudioManager.Instance.PlayFootsteps();
+
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = startPosition + direction;
 
         float elapsedTime = 0f;
         float moveDuration = gridSize / moveSpeed;
-       
-
+        
         while (elapsedTime < moveDuration)
         {
             float linearProgress = elapsedTime / moveDuration; // Calculate linear progress (0 to 1)
@@ -97,6 +99,9 @@ public class GridMovement : MonoBehaviour
     System.Collections.IEnumerator RotatePlayer(float angle)
     {
         isMoving = true;
+
+        AudioManager.Instance.PlayFootsteps();
+
         Quaternion startRotation = transform.rotation;
         Quaternion targetRotation = startRotation * Quaternion.Euler(0, angle, 0);
         float elapsedTime = 0f;

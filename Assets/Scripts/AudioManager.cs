@@ -13,6 +13,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("Audio Clips")]
     [SerializeField] private AudioClip wallThudSound;
+    [SerializeField] private AudioClip[] footstepSounds;
 
     private float thudCooldownTimer = 0f;
 
@@ -47,6 +48,15 @@ public class AudioManager : MonoBehaviour
         {
             sfxSpeaker.PlayOneShot(wallThudSound);
             thudCooldownTimer = cooldownDuration; // Reset cooldown timer
+        }
+    }
+
+    public void PlayFootsteps()
+    {
+        if (sfxSpeaker != null && footstepSounds != null)
+        {
+            int randomIndex = Random.Range(0, footstepSounds.Length);
+            sfxSpeaker.PlayOneShot(footstepSounds[randomIndex]);
         }
     }
 }
