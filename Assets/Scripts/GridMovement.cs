@@ -56,8 +56,7 @@ public class GridMovement : MonoBehaviour
             Vector3 lineEnd = targetPosition + (Vector3.up * 0.5f);
             if (Physics.Linecast(lineStart, lineEnd, wallLayer)) 
             {
-                // Todo: Add wall-hitting audio
-                Debug.Log("Hitting wall, no movement!");
+                AudioManager.Instance.PlayWallThud(gridSize / moveSpeed);
             }
             else
             {
