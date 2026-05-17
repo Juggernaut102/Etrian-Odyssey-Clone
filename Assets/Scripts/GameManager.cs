@@ -1,6 +1,8 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+
 
 // Singleton class used to manage game states, such as the title screen, gameplay, pause menu, and game over screen. This class can be expanded to include methods for handling transitions between states, managing game flow, and coordinating with other systems like the AudioManager.
 
@@ -51,6 +53,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string titleSceneName; // Remember to assign in editor!!
     [SerializeField] private string firstLevelName; // Remember to assign in editor!!
 
+    private GameState prevGameState; // Used to store the previous game state when pausing
+
     private void Awake()
     {
         if (instance == null)
@@ -75,6 +79,22 @@ public class GameManager : MonoBehaviour
         {
             UpdateGameState(GameState.Explore);
         }
+    }
+
+    public void OnPauseInput(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return; // Only trigger on button press, not release
+        
+        if (currentState == GameState.Paused)
+        {
+            ResumeGame();
+        }
+        else if (currentState == GameState.Explore || currentState == GameState.Battle)
+        {
+            prevGameState = currentState; // Store the current state before pausing
+            UpdateGameState(GameState.Paused);
+        }
+    
     }
 
     /// <summary>
@@ -163,5 +183,13 @@ public class GameManager : MonoBehaviour
     {
         UpdateGameState(GameState.TitleScreen);
         SceneManager.LoadScene(titleSceneName);
+    }
+
+    /// <summary>
+    /// Returns to game state before pausing.
+    /// </summary>
+    public void ResumeGame()
+    {
+        UpdateGameState(prevGameState);
     }
 }
