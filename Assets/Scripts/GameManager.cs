@@ -62,9 +62,10 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject); // Persist across scenes
         }
-        else
+        else if (instance != this)
         {
             Destroy(gameObject);
+            return;
         }
     }
 
@@ -138,6 +139,7 @@ public class GameManager : MonoBehaviour
     private void HandleExplore()
     {
         Time.timeScale = 1f; // Ensure game time is running
+        GetComponent<PlayerInput>().SwitchCurrentActionMap("Player"); // Switch to player controls
         if (UiManager.Instance != null) UiManager.Instance.SetExplorationHUD();
         Debug.Log("Beginnning exploration!");
 
@@ -153,6 +155,7 @@ public class GameManager : MonoBehaviour
     private void HandlePaused()
     {
         Time.timeScale = 0f; // Pause game time when paused
+        GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); // Switch to UI controls
         if (UiManager.Instance != null) UiManager.Instance.SetMenuUI();
         Debug.Log("Menu opened!");
     }
@@ -172,8 +175,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartGame() 
     {
-        UpdateGameState(GameState.Explore);
         SceneManager.LoadScene(firstLevelName);
+        UpdateGameState(GameState.Explore);
     }
 
     /// <summary>
@@ -181,8 +184,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ReturnToTitle()
     {
-        UpdateGameState(GameState.TitleScreen);
         SceneManager.LoadScene(titleSceneName);
+        UpdateGameState(GameState.TitleScreen);
     }
 
     /// <summary>
