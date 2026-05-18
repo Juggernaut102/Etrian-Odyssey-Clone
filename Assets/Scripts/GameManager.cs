@@ -1,6 +1,8 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+
 
 // Singleton class used to manage game states, such as the title screen, gameplay, pause menu, and game over screen. This class can be expanded to include methods for handling transitions between states, managing game flow, and coordinating with other systems like the AudioManager.
 
@@ -37,7 +39,8 @@ public class GameManager : MonoBehaviour
     public enum GameState
     {
         TitleScreen,
-        Playing,
+        Explore,
+        Battle,
         Paused,
         GameOver
     }
@@ -50,6 +53,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string titleSceneName; // Remember to assign in editor!!
     [SerializeField] private string firstLevelName; // Remember to assign in editor!!
 
+    private GameState prevGameState; // Used to store the previous game state when pausing
+
     private void Awake()
     {
         if (instance == null)
@@ -57,9 +62,10 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject); // Persist across scenes
         }
-        else
+        else if (instance != this)
         {
             Destroy(gameObject);
+            return;
         }
     }
 
@@ -72,8 +78,24 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            UpdateGameState(GameState.Playing);
+            UpdateGameState(GameState.Explore);
         }
+    }
+
+    public void OnPauseInput(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return; // Only trigger on button press, not release
+        
+        if (currentState == GameState.Paused)
+        {
+            ResumeGame();
+        }
+        else if (currentState == GameState.Explore || currentState == GameState.Battle)
+        {
+            prevGameState = currentState; // Store the current state before pausing
+            UpdateGameState(GameState.Paused);
+        }
+    
     }
 
     /// <summary>
@@ -88,8 +110,11 @@ public class GameManager : MonoBehaviour
             case GameState.TitleScreen:
                 HandleTitleScreen();
                 break;
-            case GameState.Playing:
-                HandlePlaying();
+            case GameState.Explore:
+                HandleExplore();
+                break;
+            case GameState.Battle:
+                HandleBattle();
                 break;
             case GameState.Paused:
                 HandlePaused();
@@ -107,21 +132,38 @@ public class GameManager : MonoBehaviour
     private void HandleTitleScreen()
     {
         Time.timeScale = 0f; // Pause game time on title screen
+        if (UiManager.Instance != null) UiManager.Instance.SetTitleUI();
+        Debug.Log("Going to title screen!");
     }
 
-    private void HandlePlaying()
+    private void HandleExplore()
     {
         Time.timeScale = 1f; // Ensure game time is running
+        GetComponent<PlayerInput>().SwitchCurrentActionMap("Player"); // Switch to player controls
+        if (UiManager.Instance != null) UiManager.Instance.SetExplorationHUD();
+        Debug.Log("Beginnning exploration!");
+
+    }
+
+    private void HandleBattle()
+    {
+        Time.timeScale = 1f; // Ensure game time is running(?)
+        if (UiManager.Instance != null) UiManager.Instance.SetBattleHUD();
+        Debug.Log("Entering battle!");
     }
 
     private void HandlePaused()
     {
         Time.timeScale = 0f; // Pause game time when paused
+        GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); // Switch to UI controls
+        if (UiManager.Instance != null) UiManager.Instance.SetMenuUI();
+        Debug.Log("Menu opened!");
     }
 
     private void HandleGameOver()
     {
         Time.timeScale = 0f; // Pause game time on game over
+        if (UiManager.Instance != null) UiManager.Instance.SetGameOverUI();
         Debug.Log("Player Died! Game Over.");
     }
 
@@ -133,8 +175,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartGame() 
     {
-        UpdateGameState(GameState.Playing);
         SceneManager.LoadScene(firstLevelName);
+        UpdateGameState(GameState.Explore);
     }
 
     /// <summary>
@@ -142,7 +184,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ReturnToTitle()
     {
-        UpdateGameState(GameState.TitleScreen);
         SceneManager.LoadScene(titleSceneName);
+        UpdateGameState(GameState.TitleScreen);
+    }
+
+    /// <summary>
+    /// Returns to game state before pausing.
+    /// </summary>
+    public void ResumeGame()
+    {
+        UpdateGameState(prevGameState);
     }
 }

@@ -5,7 +5,7 @@ public class AudioManager : MonoBehaviour
 {
     private static AudioManager instance;
 
-    // Property to access the singleton instance of GameManager. If it doesn't exist, it will attempt to find one in the scene or create a new one from a prefab.
+    // Property to access the singleton instance of AudioManager. If it doesn't exist, it will attempt to find one in the scene or create a new one from a prefab.
 
     public static AudioManager Instance 
     { 
