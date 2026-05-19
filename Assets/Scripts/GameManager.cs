@@ -11,8 +11,8 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
 
     // Property to access the singleton instance of GameManager. If it doesn't exist, it will attempt to find one in the scene or create a new one from a prefab.
-    public static GameManager Instance 
-    { 
+    public static GameManager Instance
+    {
         get
         {
             if (instance == null)
@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
     [Header("Scene Configuration")]
     [SerializeField] private string titleSceneName; // Remember to assign in editor!!
     [SerializeField] private string firstLevelName; // Remember to assign in editor!!
+    [SerializeField] private string battleSceneName; // Remember to assign in editor!!
 
     private GameState prevGameState; // Used to store the previous game state when pausing
 
@@ -85,7 +86,7 @@ public class GameManager : MonoBehaviour
     public void OnPauseInput(InputAction.CallbackContext context)
     {
         if (!context.performed) return; // Only trigger on button press, not release
-        
+
         if (currentState == GameState.Paused)
         {
             ResumeGame();
@@ -95,7 +96,7 @@ public class GameManager : MonoBehaviour
             prevGameState = currentState; // Store the current state before pausing
             UpdateGameState(GameState.Paused);
         }
-    
+
     }
 
     /// <summary>
@@ -147,8 +148,10 @@ public class GameManager : MonoBehaviour
 
     private void HandleBattle()
     {
-        Time.timeScale = 1f; // Ensure game time is running(?)
+        Time.timeScale = 1f;    // Leave game time running for dungeon enemies to join battle
+        GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); // Switch to UI controls for battle
         if (UiManager.Instance != null) UiManager.Instance.SetBattleHUD();
+        SceneManager.LoadScene(battleSceneName, LoadSceneMode.Additive); // Load battle scene additively on top of current scene
         Debug.Log("Entering battle!");
     }
 
@@ -173,7 +176,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Commands the scene manager to boot up the actual game level.
     /// </summary>
-    public void StartGame() 
+    public void StartGame()
     {
         SceneManager.LoadScene(firstLevelName);
         UpdateGameState(GameState.Explore);
@@ -194,5 +197,33 @@ public class GameManager : MonoBehaviour
     public void ResumeGame()
     {
         UpdateGameState(prevGameState);
+    }
+
+    /// <summary>
+    /// Sends the player to the battle scene when battle starts. 
+    /// This should be called by the BattleManager when the battle is initiated.
+    /// </summary>
+    public void EnterBattle()
+    {
+        UpdateGameState(GameState.Battle);
+    }
+
+    /// <summary>
+    ///  Returns player to same position in dungeon after battle ends. 
+    ///  Battle considered end only when won or fled, not when party wiped (that is the game over state). 
+    ///  This should be called by the BattleManager when the battle is concluded.
+    /// </summary>
+    public void ExitBattle()
+    {
+        UpdateGameState(GameState.Explore);
+    }
+
+    /// <summary>
+    /// Sends player to GameOver Scene after party wipe. 
+    /// This should be called by the BattleManager when the battle is concluded with a loss.
+    /// </summary>
+    public void GameOver()
+    {
+        UpdateGameState(GameState.GameOver);
     }
 }
