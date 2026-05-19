@@ -1,14 +1,19 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 
-// Singleton class used to manage game states, such as the title screen, gameplay, pause menu, and game over screen. This class can be expanded to include methods for handling transitions between states, managing game flow, and coordinating with other systems like the AudioManager.
+// Singleton class used to manage game states, such as the title screen, gameplay, pause menu, and game over screen.
+// This class can be expanded to include methods for handling transitions between states, managing game flow, and coordinating with other systems like the AudioManager.
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
+
+    public static int CurrentTurn = 0; // Used to track turns in battle and trigger turn-based events
+
 
     // Property to access the singleton instance of GameManager. If it doesn't exist, it will attempt to find one in the scene or create a new one from a prefab.
     public static GameManager Instance
@@ -56,6 +61,12 @@ public class GameManager : MonoBehaviour
 
     private GameState prevGameState; // Used to store the previous game state when pausing
 
+
+    /// <summary>
+    /// Fires when the player takes a step in the dungeon, or a turn passes in battle
+    /// </summary>  
+    public static event Action OnGlobalTurnTick;
+
     private void Awake()
     {
         if (instance == null)
@@ -96,7 +107,17 @@ public class GameManager : MonoBehaviour
             prevGameState = currentState; // Store the current state before pausing
             UpdateGameState(GameState.Paused);
         }
+    }
 
+
+    /// <summary>
+    /// Invokes the global turn tick event, which can be used to trigger any logic that should happen on each turn, such as enemy actions, status effect updates, or environmental changes.
+    /// </summary>
+    public void ProcessGlobalTurnTick()
+    {
+        CurrentTurn++;
+        OnGlobalTurnTick?.Invoke();
+        Debug.Log("One turn passed! Current turn: " + CurrentTurn);
     }
 
     /// <summary>
@@ -220,7 +241,7 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Sends player to GameOver Scene after party wipe. 
-    /// This should be called by the BattleManager when the battle is concluded with a loss.
+    /// This should be called by any relevent script when party health hits zero.
     /// </summary>
     public void GameOver()
     {

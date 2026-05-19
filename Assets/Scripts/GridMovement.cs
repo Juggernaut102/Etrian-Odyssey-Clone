@@ -42,6 +42,11 @@ public class GridMovement : MonoBehaviour
     // Beginning of custom method that handles movement input
     void Update()
     {
+        OnMove();
+    }
+
+    private void OnMove()
+    {
         if (GameManager.Instance.CurrentState != GameManager.GameState.Explore) return; // Only allow movement when in exploring state
 
         if (isMoving) return; // Prevent starting a new move while already moving
@@ -56,7 +61,7 @@ public class GridMovement : MonoBehaviour
             // We lift the start/end points up slightly (Vector3.up * 0.5f) so the line doesn't scrape the floor
             Vector3 lineStart = startPosition + (Vector3.up * 0.5f);
             Vector3 lineEnd = targetPosition + (Vector3.up * 0.5f);
-            if (Physics.Linecast(lineStart, lineEnd, wallLayer)) 
+            if (Physics.Linecast(lineStart, lineEnd, wallLayer))
             {
                 AudioManager.Instance.PlayWallThud(gridSize / moveSpeed);
             }
@@ -64,6 +69,7 @@ public class GridMovement : MonoBehaviour
             {
                 StartCoroutine(MovePlayer(direction));
             }
+            OnMovementComplete();
         }
         else if (Mathf.Abs(inputVector.x) > 0.5f)
         {
@@ -120,5 +126,12 @@ public class GridMovement : MonoBehaviour
 
         transform.rotation = targetRotation; // Snap perfectly to 90-degree rotation
         isMoving = false;
+    }
+
+    // Triggers after every step taken (not rotation, just forward/backward movement)
+    private void OnMovementComplete()
+    {
+        GameManager.Instance.ProcessGlobalTurnTick(); // Notify GameManager to advance the turn after each move
+        // GameManager.Instance.CheckForRandomEncounters(); // Check for random encounters after each move
     }
 }

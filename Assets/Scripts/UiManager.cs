@@ -1,6 +1,7 @@
 using UnityEngine;
 
-// Singleton class used to manage UI elements, such as the exploration panel, battle panel, and pause menu. This class can be expanded to include methods for updating UI elements based on game state changes, handling user interactions with the UI, and coordinating with other systems like the GameManager and AudioManager.
+// Singleton class used to manage UI elements, such as the exploration panel, battle panel, and pause menu.
+// This class can be expanded to include methods for updating UI elements based on game state changes, handling user interactions with the UI, and coordinating with other systems like the GameManager and AudioManager.
 public class UiManager : MonoBehaviour
 {
     private static UiManager instance;
