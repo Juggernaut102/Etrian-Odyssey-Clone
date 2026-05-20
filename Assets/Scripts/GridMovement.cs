@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,7 +11,7 @@ public class GridMovement : MonoBehaviour
     [SerializeField] private float rotateSpeed = 180f;
     [SerializeField] private float gridSize = 4f;
     [SerializeField] private LayerMask wallLayer;
-
+    
     private InputSystem_Actions controls;
     private bool isMoving = false;
     private Vector2 inputVector;
