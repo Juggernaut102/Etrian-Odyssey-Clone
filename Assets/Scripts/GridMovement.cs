@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 
 public class GridMovement : MonoBehaviour
 {
+    private Vector2Int currentGridPosition; // Starting grid position
+    public Vector2Int CurrentGridPosition => currentGridPosition; // Public getter for current grid position
+
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float rotateSpeed = 180f;
@@ -17,6 +20,7 @@ public class GridMovement : MonoBehaviour
     private void Awake()
     {
         controls = new InputSystem_Actions();           // Initialize the input action asset
+        UpdateCurrentGridPosition();                    // Set the initial grid position based on the starting transform
     }
 
     private void OnEnable()
@@ -128,9 +132,17 @@ public class GridMovement : MonoBehaviour
         isMoving = false;
     }
 
+    private void UpdateCurrentGridPosition()
+    {
+        currentGridPosition = new Vector2Int(
+            Mathf.RoundToInt(transform.position.x),
+            Mathf.RoundToInt(transform.position.z)); // Update grid position based on new transform
+    }
+
     // Triggers after every step taken (not rotation, just forward/backward movement)
     private void OnMovementComplete()
     {
+        UpdateCurrentGridPosition(); // Update the current grid position after movement is complete
         GameManager.Instance.ProcessGlobalTurnTick(); // Notify GameManager to advance the turn after each move
         // GameManager.Instance.CheckForRandomEncounters(); // Check for random encounters after each move
     }
