@@ -4,8 +4,8 @@ using UnityEngine;
 public class FoeController : MonoBehaviour
 {
     [Header("FOE Configuration")]
-    // [SerializeField] private FoeMovement foeMovement;
-    [SerializeField] private GameObject player;
+    [SerializeField] private FoeMovement foe;
+    [SerializeField] private GridMovement player;
 
     private void OnEnable()
     {
@@ -19,13 +19,14 @@ public class FoeController : MonoBehaviour
 
     private void TakeTurnAction()
     {
-        // foeMovement.Move();
+        foe.Move();
         CheckForCombatIntersection();
     }
 
     private void CheckForCombatIntersection()
     {
-        if (transform.position == player.transform.position)
+        // Not complete, must check if player and foe cross paths during movement, not just if they end on the same tile. This is just a placeholder for now to trigger battle when they end on the same tile.
+        if (foe.CurrentGridPosition == player.CurrentGridPosition)
         {
             GameManager.Instance.EnterBattle();
         }
