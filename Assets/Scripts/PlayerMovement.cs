@@ -62,7 +62,7 @@ public class PlayerMovement : GridMovement
             }
             else
             {
-                StartCoroutine(MoveEntity(direction));
+                StartCoroutine(MoveEntity(targetPosition));
                 OnMovementComplete();
             }
         }

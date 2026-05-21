@@ -19,14 +19,13 @@ public abstract class GridMovement : MonoBehaviour
     }
 
     // Coroutine definitions for smooth movement to the target position
-    protected System.Collections.IEnumerator MoveEntity(Vector3 direction)
+    protected System.Collections.IEnumerator MoveEntity(Vector3 targetPosition)
     {
         isMoving = true;
 
         AudioManager.Instance.PlayFootsteps();
 
         Vector3 startPosition = transform.position;
-        Vector3 targetPosition = startPosition + direction;
 
         float elapsedTime = 0f;
         float moveDuration = gridSize / moveSpeed;
