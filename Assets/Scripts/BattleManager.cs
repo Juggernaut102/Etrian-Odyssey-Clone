@@ -35,8 +35,16 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    public enum BattleResult
+    {
+        PlayerVictory,
+        PlayerFled,
+        PlayerDied
+    }
+
     private Camera dungeonCamera; // Reference to the main camera to turn it off during battle
     private int currentTurn = 0; // Variable to track (and display?) battle turn order
+    private EnemyProfile currentEnemy; // Reference to the current enemy being fought, can be used to access stats and update UI
 
     private void Awake()
     {
@@ -54,6 +62,12 @@ public class BattleManager : MonoBehaviour
         if (dungeonCamera != null) dungeonCamera.gameObject.SetActive(false);
     }
 
+    public void InitializeBattle(EnemyProfile enemy)
+    {
+        currentEnemy = enemy;
+        Debug.Log($"Combat Scene Ready! Fighting: {currentEnemy.EnemyName}");
+    }
+
     /// <summary>
     /// Calls at the end of every turn in battle.
     /// </summary>
@@ -67,10 +81,16 @@ public class BattleManager : MonoBehaviour
         Debug.Log("Combat turn resolved. Current combat turn: " + currentTurn);
     }
 
-    public void OnBattleFinished()
+    public void Win()
     {
         if (dungeonCamera != null) dungeonCamera.gameObject.SetActive(true); // Turn the camera back on when battle is finished
-        GameManager.Instance.ExitBattle(); // Notify GameManager to return to exploration mode
+        GameManager.Instance.ExitBattle(true); // Notify GameManager to return to exploration mode
+    }
+
+    public void Flee()
+    {
+        if (dungeonCamera != null) dungeonCamera.gameObject.SetActive(true); // Turn the camera back on when battle is finished
+        GameManager.Instance.ExitBattle(false); // Notify GameManager to return to exploration mode
     }
 
     public void OnBattleLoss()

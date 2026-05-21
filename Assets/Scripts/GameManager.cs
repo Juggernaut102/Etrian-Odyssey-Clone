@@ -61,11 +61,16 @@ public class GameManager : MonoBehaviour
 
     private GameState prevGameState; // Used to store the previous game state when pausing
 
+    [Header("Battle info")]
+    public Vector2Int LastBattlePosition { get; private set; }
+
 
     /// <summary>
     /// Fires when the player takes a step in the dungeon, or a turn passes in battle
     /// </summary>  
     public static event Action OnGlobalTurnTick;
+
+    public static event Action<bool> OnBattleEnd;
 
     private void Awake()
     {
@@ -162,7 +167,6 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f; // Ensure game time is running
         GetComponent<PlayerInput>().SwitchCurrentActionMap("Player"); // Switch to player controls
-        if (SceneManager.GetActiveScene().name == battleSceneName) SceneManager.UnloadSceneAsync(battleSceneName);
         if (UiManager.Instance != null) UiManager.Instance.SetExplorationHUD();
         Debug.Log("Beginnning exploration!");
 
@@ -173,7 +177,6 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;    // Leave game time running for dungeon enemies to join battle
         GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); // Switch to UI controls for battle
         if (UiManager.Instance != null) UiManager.Instance.SetBattleHUD();
-        SceneManager.LoadSceneAsync(battleSceneName, LoadSceneMode.Additive); // Load battle scene additively on top of current scene
         Debug.Log("Entering battle!");
     }
 
@@ -225,9 +228,20 @@ public class GameManager : MonoBehaviour
     /// Sends the player to the battle scene when battle starts. 
     /// This should be called by the BattleManager when the battle is initiated.
     /// </summary>
-    public void EnterBattle()
+    public void EnterBattle(EnemyProfile enemy, Vector2Int combatTile)
     {
         UpdateGameState(GameState.Battle);
+
+        LastBattlePosition = combatTile;
+
+        // Load battle scene additively and initialize battle with the given enemy once loading is complete
+        AsyncOperation loadOp = SceneManager.LoadSceneAsync(battleSceneName, LoadSceneMode.Additive);
+        loadOp.completed += (_) =>
+        {
+            BattleManager battleManager = FindFirstObjectByType<BattleManager>();
+            if (battleManager != null) battleManager.InitializeBattle(enemy);
+            else Debug.LogError("BattleManager not found in scene after loading battle scene! Please ensure a BattleManager component is present in the battle scene.");
+        };
     }
 
     /// <summary>
@@ -235,9 +249,13 @@ public class GameManager : MonoBehaviour
     ///  Battle considered end only when won or fled, not when party wiped (that is the game over state). 
     ///  This should be called by the BattleManager when the battle is concluded.
     /// </summary>
-    public void ExitBattle()
+    public void ExitBattle(bool playerVictory)
     {
+        OnBattleEnd?.Invoke(playerVictory);
+        SceneManager.UnloadSceneAsync(battleSceneName);
         UpdateGameState(GameState.Explore);
+
+        
     }
 
     /// <summary>
