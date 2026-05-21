@@ -162,6 +162,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f; // Ensure game time is running
         GetComponent<PlayerInput>().SwitchCurrentActionMap("Player"); // Switch to player controls
+        if (SceneManager.GetActiveScene().name == battleSceneName) SceneManager.UnloadSceneAsync(battleSceneName);
         if (UiManager.Instance != null) UiManager.Instance.SetExplorationHUD();
         Debug.Log("Beginnning exploration!");
 
@@ -172,7 +173,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;    // Leave game time running for dungeon enemies to join battle
         GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); // Switch to UI controls for battle
         if (UiManager.Instance != null) UiManager.Instance.SetBattleHUD();
-        SceneManager.LoadScene(battleSceneName, LoadSceneMode.Additive); // Load battle scene additively on top of current scene
+        SceneManager.LoadSceneAsync(battleSceneName, LoadSceneMode.Additive); // Load battle scene additively on top of current scene
         Debug.Log("Entering battle!");
     }
 

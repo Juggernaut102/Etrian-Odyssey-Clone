@@ -30,4 +30,9 @@ public class FoeController : MonoBehaviour
             GameManager.Instance.EnterBattle();
         }
     }
+
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
 }
