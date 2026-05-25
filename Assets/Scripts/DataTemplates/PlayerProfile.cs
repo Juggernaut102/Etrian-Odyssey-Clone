@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PlayerProfile", menuName = "Scriptable Objects/PlayerProfile")]
+[CreateAssetMenu(fileName = "PlayerProfile", menuName = "Scriptable Objects/CombatProfile/PlayerProfile")]
 public class PlayerProfile : CombatProfile
 {
     [Header("Player-Specific Data")]

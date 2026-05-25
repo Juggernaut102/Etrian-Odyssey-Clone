@@ -56,7 +56,6 @@ public class BattleManager : MonoBehaviour
 
     [Header("Initializing")]
     [SerializeField] private BattleState currentBattleState;
-    [SerializeField] private BattleUIController battleUiController;
     private Camera dungeonCamera; // Reference to the main camera to turn it off during battle
     private AudioListener dungeonListener; // Reference to the main audio listener to turn it off during battle
 
@@ -75,6 +74,7 @@ public class BattleManager : MonoBehaviour
     [Header("Turn Variables")]
     private int currentTurn = 0; // Variable to track (and display?) battle turn order
     private int currentAllyIndex = 0; // Variable to track which party member is currently selecting their action during player turn
+    private BattleEntity currentAlly;
     private List<CombatAction> actionTurnQueue = new List<CombatAction>(); // List to hold all combat actions chosen by player and enemies during the turn, which will be sorted and resolved at the end of the turn>
 
 
@@ -182,19 +182,15 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        BattleEntity currentWorker = activeAllies[currentAllyIndex];
+        currentAlly = activeAllies[currentAllyIndex];
 
         // Skip this character if they are knocked out!
-        if (!currentWorker.IsAlive())
+        if (!currentAlly.IsAlive())
         {
             currentAllyIndex++;
             StartMenuInputForCurrentAlly(); // Recursively check the next person
             return;
         }
-
-        // 🎯 THE HANDOFF: Push the active character directly to the UI!
-        // (Assuming you have a reference to your BattleUIController script instance)
-        battleUiController.SetActiveAttacker(currentWorker);
     }
 
     /// <summary>
@@ -312,4 +308,6 @@ public class BattleManager : MonoBehaviour
         }
         if (dungeonListener != null) dungeonListener.enabled = false;
     }
+
+    public BattleEntity GetCurrentAttacker() => currentAlly;
 }

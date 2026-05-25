@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyProfile", menuName = "Scriptable Objects/EnemyProfile")]
+[CreateAssetMenu(fileName = "EnemyProfile", menuName = "Scriptable Objects/CombatProfile/EnemyProfile")]
 public class EnemyProfile : CombatProfile
 {
     [Header("Visual Assets")]

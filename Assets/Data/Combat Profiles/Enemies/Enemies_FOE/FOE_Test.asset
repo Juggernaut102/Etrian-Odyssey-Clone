@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1270ae22a4a48cb4cb781016ecb63ce3, type: 3}
   m_Name: FOE_Test
   m_EditorClassIdentifier: Assembly-CSharp::EnemyProfile
-  enemyName: Test_FOE
-  battleSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  entityName: FOE_Test
   maxHealth: 100
   attackPower: 10
   speed: 2
+  enemyPrefabLayout: {fileID: 4713732376495984677, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
   xpReward: 100
+  goldReward: 0
