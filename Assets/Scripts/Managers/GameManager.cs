@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -63,6 +62,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Battle info")]
     public Vector2Int LastBattlePosition { get; private set; }
+    public static event Action<bool> OnBattleEnd;
 
 
     /// <summary>
@@ -70,7 +70,6 @@ public class GameManager : MonoBehaviour
     /// </summary>  
     public static event Action OnGlobalTurnTick;
 
-    public static event Action<bool> OnBattleEnd;
 
     private void Awake()
     {

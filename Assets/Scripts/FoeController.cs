@@ -37,7 +37,6 @@ public class FoeController : MonoBehaviour
 
     private void HandleBattleResolution(bool playerVictory)
     {
-        // if (GameManager.Instance.LastBattleResult == BattleManager.BattleResult.PlayerVictory)
         if (foe.CurrentGridPosition == GameManager.Instance.LastBattlePosition)
         {
             if (playerVictory)
@@ -47,14 +46,10 @@ public class FoeController : MonoBehaviour
             else
             {
                 Debug.Log("Player fled! Respawning visual mesh and backing away.");
-                StepAwayFromPlayer(); // a little iffy if i want to make foe step away or player step away, or depends on who attack who?
+                foe.StepAwayFromPlayer(); // a little iffy if i want to make foe step away or player step away, or depends on who attack who?
+                // or maybe usually have the player step away, unless no space, then foe step away? cause player is the one retreating right
             }
         }
-    }
-
-    private void StepAwayFromPlayer()
-    {
-        // logic for moving 1 step away
     }
 
     public void Die()

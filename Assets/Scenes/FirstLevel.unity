@@ -1225,6 +1225,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   pathWaypoints:
+  - {x: 4, y: -1}
   - {x: 4, y: 0}
   - {x: 4, y: 1}
   - {x: 4, y: 2}
@@ -1235,6 +1236,7 @@ MonoBehaviour:
   - {x: 4, y: 1}
   - {x: 4, y: 0}
   - {x: 4, y: -1}
+  - {x: 4, y: -2}
 --- !u!114 &722432408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1249,6 +1251,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FoeController
   foe: {fileID: 722432407}
   player: {fileID: 1692153117}
+  profile: {fileID: 11400000, guid: 7e92e8137a67f7b4cb29d1977e8a8fb7, type: 2}
 --- !u!4 &722432409
 Transform:
   m_ObjectHideFlags: 0
@@ -1258,7 +1261,7 @@ Transform:
   m_GameObject: {fileID: 722432406}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16, y: 0, z: -4}
+  m_LocalPosition: {x: 16, y: 0, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

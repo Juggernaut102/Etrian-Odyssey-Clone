@@ -16,4 +16,10 @@ public class FoeMovement : GridMovement
         currentWaypointIndex = (currentWaypointIndex + 1) % pathWaypoints.Count; // Loop to the next waypoint, wrapping around to the start
         OnMovementComplete(); // Update grid position immediately after starting movement (since we won't be checking it every frame during movement)
     }
+
+    // Only called if player cannot step away from foe when retreating
+    public void StepAwayFromPlayer()
+    {
+        // logic for moving 1 step away
+    }
 }
