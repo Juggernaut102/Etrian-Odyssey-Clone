@@ -5,7 +5,6 @@ public abstract class CombatProfile : ScriptableObject
 {
     [Header("Base Identity")]
     [SerializeField] protected string entityName;
-    [SerializeField] protected Sprite battleSprite;
 
     [Header("Shared Combat Stats")]
     [SerializeField] protected int maxHealth;
@@ -14,7 +13,6 @@ public abstract class CombatProfile : ScriptableObject
 
     // Public properties to access the private fields
     public string EntityName => entityName;
-    public Sprite BattleSprite => battleSprite;
     public int MaxHealth => maxHealth;
     public int AttackPower => attackPower;
     public int Speed => speed;

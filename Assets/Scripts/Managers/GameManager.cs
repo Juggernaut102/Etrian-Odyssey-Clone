@@ -227,7 +227,7 @@ public class GameManager : MonoBehaviour
     /// Sends the player to the battle scene when battle starts. 
     /// This should be called by the BattleManager when the battle is initiated.
     /// </summary>
-    public void EnterBattle(EnemyProfile enemy, Vector2Int combatTile)
+    public void EnterBattle(EncounterProfile enemyTroop, Vector2Int combatTile)
     {
         UpdateGameState(GameState.Battle);
 
@@ -238,7 +238,7 @@ public class GameManager : MonoBehaviour
         loadOp.completed += (_) =>
         {
             BattleManager battleManager = FindFirstObjectByType<BattleManager>();
-            if (battleManager != null) battleManager.InitializeBattle(enemy);
+            if (battleManager != null) battleManager.InitializeBattle(enemyTroop);
             else Debug.LogError("BattleManager not found in scene after loading battle scene! Please ensure a BattleManager component is present in the battle scene.");
         };
     }

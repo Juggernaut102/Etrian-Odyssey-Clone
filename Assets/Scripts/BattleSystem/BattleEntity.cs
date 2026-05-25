@@ -5,6 +5,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public abstract class BattleEntity : MonoBehaviour
 {
+    // SerializeField not needed?
     [SerializeField] protected string entityName;
     [SerializeField] protected int maxHealth;
     [SerializeField] protected int currentHealth;
@@ -30,11 +31,7 @@ public abstract class BattleEntity : MonoBehaviour
         Debug.Log($"Damage taken by {entityName}: {dmg}");
     }
 
-    public void PerformBasicAttack(BattleEntity target)
-    {
-        Debug.Log($"{entityName} attacks {target.EntityName} for {attackPower} damage!");
-        target.TakeDamage(attackPower);
-    }
-
-    public abstract CombatAction CalculateTurnAction(List<BattleEntity> opponents);
+    // We use IEnumerable here to allow for flexible input of opponents, whether it is PlayerEntity or EnemyEntity, as long as they are BattleEntities
+    // Only for read-only methods
+    public abstract CombatAction CalculateTurnAction(IEnumerable<BattleEntity> opponents);
 }

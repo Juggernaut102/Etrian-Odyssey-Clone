@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
@@ -16,12 +17,12 @@ public class EnemyEntity : BattleEntity
         }
     }
 
-    public override CombatAction CalculateTurnAction(List<BattleEntity> players)
+    public override CombatAction CalculateTurnAction(IEnumerable<BattleEntity> players)
     {
-        if (players == null || players.Count == 0) return null;
+        if (players == null || players.Count() == 0) return null;
 
         // Placeholder for more complex AI decision making, for now just basic attack a random player in the list
-        BattleEntity target = players[UnityEngine.Random.Range(0, players.Count)];
+        BattleEntity target = players.ElementAt(UnityEngine.Random.Range(0, players.Count()));
 
         CombatAction plannedMove = new CombatAction();
         plannedMove.actionName = "Basic Strike";

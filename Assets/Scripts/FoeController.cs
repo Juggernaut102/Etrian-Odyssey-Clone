@@ -5,7 +5,7 @@ public class FoeController : MonoBehaviour
     [Header("FOE Configuration")]
     [SerializeField] private FoeMovement foe;
     [SerializeField] private PlayerMovement player;
-    [SerializeField] private EnemyProfile profile;
+    [SerializeField] private EncounterProfile profile;
 
     private void OnEnable()
     {

@@ -19,7 +19,7 @@ public class PlayerEntity : BattleEntity
         
     }
 
-    public override CombatAction CalculateTurnAction(List<BattleEntity> enemies)
+    public override CombatAction CalculateTurnAction(IEnumerable<BattleEntity> enemies)
     {
         return null; // Player action is determined by player input, so this method can return null or be left unimplemented
     }

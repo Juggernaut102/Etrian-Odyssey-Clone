@@ -10,8 +10,8 @@ using UnityEngine.InputSystem.Controls;
 
 
 // How this class works is as follows: During player turn, the player will choose actions for each character in the party.
-// BattleUIController will then encapsulate these actions into a CombatAction and pass it to BattleManager.
 // Then, same thing for enemy turn, but for enemy units.    
+// BattleUIController will then encapsulate these actions into a CombatAction and pass it to BattleManager.
 // Then during resolving phase, BattleManager will sort the actions by speed, and resolve them by invoking them. Then end turn.
 public class BattleManager : MonoBehaviour
 {
@@ -54,26 +54,27 @@ public class BattleManager : MonoBehaviour
         PlayerDied
     }
 
-    [Header("Current Phase")]
+    [Header("Initializing")]
     [SerializeField] private BattleState currentBattleState;
     [SerializeField] private BattleUIController battleUiController;
+    private Camera dungeonCamera; // Reference to the main camera to turn it off during battle
+    private AudioListener dungeonListener; // Reference to the main audio listener to turn it off during battle
 
     // Placeholder, will be placed in player profile once that is created
     [Header("Player Stats")]
     private int playerMaxHP = 100;
     private int playerCurrentHP = 100;
 
-    private Camera dungeonCamera; // Reference to the main camera to turn it off during battle
-    private AudioListener dungeonListener; // Reference to the main audio listener to turn it off during battle
+    [Header("Roster")]
+    [SerializeField] private List<PlayerEntity> activeAllies = new List<PlayerEntity>();
+    [SerializeField] private List<EnemyEntity> activeEnemies = new List<EnemyEntity>();
 
-    [Header("Battle Variable")]
-    private int currentTurn = 0; // Variable to track (and display?) battle turn order
-    [SerializeField] private List<BattleEntity> activeAllies = new List<BattleEntity>();
-    [SerializeField] private List<BattleEntity> activeEnemies = new List<BattleEntity>();
+    [Header("Spawning Anchors")]
+    [SerializeField] private Transform[] enemySpawnPoints;
 
     [Header("Turn Variables")]
+    private int currentTurn = 0; // Variable to track (and display?) battle turn order
     private int currentAllyIndex = 0; // Variable to track which party member is currently selecting their action during player turn
-    private EnemyProfile currentEnemy; // Reference to the current enemy being fought, can be used to access stats and update UI
     private List<CombatAction> actionTurnQueue = new List<CombatAction>(); // List to hold all combat actions chosen by player and enemies during the turn, which will be sorted and resolved at the end of the turn>
 
 
@@ -90,23 +91,75 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void InitializeBattle(EnemyProfile enemy)
+    public void InitializeBattle(EncounterProfile enemyTroop)
     {
         currentBattleState = BattleState.Initializing;
 
-        dungeonCamera = Camera.main;
-        if (dungeonCamera != null)
-        {
-            dungeonListener = dungeonCamera.GetComponent<AudioListener>();
-            dungeonCamera.gameObject.SetActive(false);
-        }
-        if (dungeonListener != null) dungeonListener.enabled = false;
+        HandleCameraAndAudio();
 
-        // ADD LOGIC to fill in activeEnemies and activeAllies
-        currentEnemy = enemy;
-        Debug.Log($"Combat Scene Initializing! Fighting: {currentEnemy.EnemyName}");
+        PopulatePlayerParty();
+        PopulateEnemyForces(enemyTroop);
+
+        Debug.Log($"{activeAllies.Count} heroes fighting {activeEnemies.Count} monsters!");
         EnterPlayerTurn();
     }
+
+    private void PopulatePlayerParty()
+    {
+        activeAllies.Clear();
+
+        // FUTURE-PROOFING: Replace this placeholder loop with a call to your 
+        // PartyManager/GameManager when you build your persistent navigation systems!
+        // e.g., List<PlayerProfile> currentParty = PartyManager.Instance.GetActiveParty();
+
+        // For now, let's find any existing PlayerEntity scripts already sitting in our combat scene asset:
+        PlayerEntity[] sceneHeroes = FindObjectsByType<PlayerEntity>(FindObjectsSortMode.None);
+        foreach (PlayerEntity hero in sceneHeroes)
+        {
+            // If they are alive, register them to act this turn round!
+            if (hero.IsAlive())
+            {
+                activeAllies.Add(hero);
+            }
+        }
+    }
+
+    private void PopulateEnemyForces(EncounterProfile enemyTroop)
+    {
+        activeEnemies.Clear();
+
+        if (enemySpawnPoints.Length == 0)
+        {
+            Debug.LogError("Missing spawn anchors on the BattleManager!");
+            return;
+        }
+
+        for (int i = 0; i < enemyTroop.EnemiesInTroop.Count; i++ )
+        {
+            if (i >= enemySpawnPoints.Length)
+            {
+                Debug.LogWarning("Not enough spawn points for all enemies! Only spawning first " + i + " out of " + enemyTroop.EnemiesInTroop.Count);
+                break;
+            }
+
+            EnemyProfile currentEnemyProfile = enemyTroop.EnemiesInTroop[i];
+            Transform anchor = enemySpawnPoints[i];
+
+            GameObject newEnemyObj = Instantiate(currentEnemyProfile.EnemyPrefabLayout, anchor.position, anchor.rotation);
+            EnemyEntity enemyActor = newEnemyObj.GetComponent<EnemyEntity>();
+
+            if (enemyActor == null)
+            {
+                Debug.LogError($"Missing enemy entity for {currentEnemyProfile.EntityName} in {currentEnemyProfile.EntityName}'s EnemyProfile's Prefab!");
+                continue;
+            }
+
+            enemyActor.Initialize(currentEnemyProfile); 
+            activeEnemies.Add(enemyActor);
+        }
+    }
+
+
 
     // ─── BEGINNING OF TURN ───────────────────────────────────
     public void EnterPlayerTurn()
@@ -168,12 +221,13 @@ public class BattleManager : MonoBehaviour
     public void EnterEnemyTurn()
     {
         currentBattleState = BattleState.EnemyTurn;
+
         foreach (BattleEntity enemy in activeEnemies)
         {
-            CombatAction enemyAction = enemy.CalculateEnemyAction(activeAllies); // Enemy calculates its action based on the current state of the battle and the player's party
+            CombatAction enemyAction = enemy.CalculateTurnAction(activeAllies);
             if (enemyAction != null)
             {
-                actionTurnQueue.Add(enemyAction); // Add the enemy's action to the turn queue
+                actionTurnQueue.Add(enemyAction);
                 Debug.Log($"Enemy Action: {enemy.name} will use {enemyAction.actionName}.");
             }
         }
@@ -246,5 +300,16 @@ public class BattleManager : MonoBehaviour
         plannedMove.ExecuteActionLogic = () => plannedMove.target.TakeDamage(15);
 
         RegisterPlayerAction(plannedMove);
+    }
+
+    private void HandleCameraAndAudio()
+    {
+        dungeonCamera = Camera.main;
+        if (dungeonCamera != null)
+        {
+            dungeonListener = dungeonCamera.GetComponent<AudioListener>();
+            dungeonCamera.gameObject.SetActive(false);
+        }
+        if (dungeonListener != null) dungeonListener.enabled = false;
     }
 }
