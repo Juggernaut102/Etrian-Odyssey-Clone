@@ -6,17 +6,18 @@ using static UnityEngine.GraphicsBuffer;
 
 public class PlayerEntity : BattleEntity
 {
-    // to implement when Playerprofile is ready
-    /*
-    public void Initialize(PlayerProfile profile)
+    public override void Initialize(CombatProfile profile)
     {
-        entityName = profile.EnemyName;
-        maxHealth = profile.MaxHealth;
-        currentHealth = maxHealth; // Start at full health
-        attackPower = profile.AttackPower;
-        speed = profile.Speed;
+        if (profile is PlayerProfile character)
+        {
+            entityName = character.EntityName;
+            maxHealth = character.MaxHealth;
+            currentHealth = maxHealth; // Start at full health
+            attackPower = character.AttackPower;
+            speed = character.Speed;
+        }
+        
     }
-    */
 
     public override CombatAction CalculateTurnAction(List<BattleEntity> enemies)
     {

@@ -17,6 +17,8 @@ public abstract class BattleEntity : MonoBehaviour
     public int AttackPower => attackPower;
     public int Speed => speed;
 
+    public abstract void Initialize(CombatProfile profile);
+
     public bool IsAlive()
     {
         return currentHealth > 0;

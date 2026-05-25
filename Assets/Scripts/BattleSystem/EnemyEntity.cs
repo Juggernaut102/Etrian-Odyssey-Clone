@@ -4,13 +4,16 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class EnemyEntity : BattleEntity
 {
-    public void Initialize(EnemyProfile profile)
+    public override void Initialize(CombatProfile profile)
     {
-        entityName = profile.EnemyName;
-        maxHealth = profile.MaxHealth;
-        currentHealth = maxHealth; // Start at full health
-        attackPower = profile.AttackPower;
-        speed = profile.Speed;
+        if (profile is EnemyProfile monster)
+        {
+            entityName = monster.EntityName;
+            maxHealth = monster.MaxHealth;
+            currentHealth = maxHealth; // Start at full health
+            attackPower = monster.AttackPower;
+            speed = monster.Speed;
+        }
     }
 
     public override CombatAction CalculateTurnAction(List<BattleEntity> players)
