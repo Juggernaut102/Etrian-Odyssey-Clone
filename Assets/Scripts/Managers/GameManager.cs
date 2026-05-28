@@ -11,9 +11,6 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
-    public static int CurrentTurn = 0; // Used to track turns in battle and trigger turn-based events
-
-
     // Property to access the singleton instance of GameManager. If it doesn't exist, it will attempt to find one in the scene or create a new one from a prefab.
     public static GameManager Instance
     {
@@ -49,6 +46,9 @@ public class GameManager : MonoBehaviour
         GameOver
     }
 
+    public static int CurrentTurn = 0; // Used to track turns in battle and trigger turn-based events
+    private PlayerInput globalInput;
+
     [Header("Current GameState")]
     [SerializeField] private GameState currentState = GameState.TitleScreen;
     public GameState CurrentState => currentState;
@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            globalInput = GetComponent<PlayerInput>();
             DontDestroyOnLoad(gameObject); // Persist across scenes
         }
         else if (instance != this)
@@ -95,6 +96,25 @@ public class GameManager : MonoBehaviour
         else
         {
             UpdateGameState(GameState.Explore);
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (globalInput != null)
+        {
+            globalInput.actions["Player/Pause"].performed += OnPauseInput;
+            globalInput.actions["UI/Cancel"].performed += OnPauseInput;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (globalInput != null)
+        {
+            globalInput.actions["Player/Pause"].performed -= OnPauseInput;
+            globalInput.actions["UI/Cancel"].performed -= OnPauseInput;
+
         }
     }
 

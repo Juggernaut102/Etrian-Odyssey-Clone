@@ -430,7 +430,7 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: bcae7864-fdb3-4658-bf6b-73aca857f70d
     m_ActionName: 'Player/Pause[/Keyboard/escape]'
-  m_NeverAutoSwitchControlSchemes: 0
+  m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
   m_SplitScreenIndex: -1

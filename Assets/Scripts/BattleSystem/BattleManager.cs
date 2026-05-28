@@ -60,11 +60,6 @@ public class BattleManager : MonoBehaviour
     private Camera dungeonCamera; // Reference to the main camera to turn it off during battle
     private AudioListener dungeonListener; // Reference to the main audio listener to turn it off during battle
 
-    // Placeholder, will be placed in player profile once that is created
-    [Header("Player Stats")]
-    private int playerMaxHP = 100;
-    private int playerCurrentHP = 100;
-
     [Header("Roster")]
     [SerializeField] private List<PlayerEntity> activeAllies = new List<PlayerEntity>();
     [SerializeField] private List<EnemyEntity> activeEnemies = new List<EnemyEntity>();
