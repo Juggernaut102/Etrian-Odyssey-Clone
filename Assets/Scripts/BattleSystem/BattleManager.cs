@@ -9,10 +9,9 @@ using UnityEngine.InputSystem.Controls;
 // This class can be expanded to include methods for managing enemy AI, player actions during battle, and transitioning back to exploration mode after a battle is resolved.
 
 
-// How this class works is as follows: During player turn, the player will choose actions for each character in the party.
-// Then, same thing for enemy turn, but for enemy units.    
-// BattleUIController will then encapsulate these actions into a CombatAction and pass it to BattleManager.
-// Then during resolving phase, BattleManager will sort the actions by speed, and resolve them by invoking them. Then end turn.
+// How this class works is as follows: During player turn, the player will choose actions for each character in the party. BattleUIController will tell BattleManager what action and which enemy the player clicked.
+// Then, each enemy will also add their planned Combat Action to turn queue using some sort of AI logic.
+// Then during resolving phase, BattleManager will sort the actions by speed, and invoke them from fastest to slowest. Then end turn.
 public class BattleManager : MonoBehaviour
 {
     private static BattleManager instance;
@@ -56,6 +55,8 @@ public class BattleManager : MonoBehaviour
 
     [Header("Initializing")]
     [SerializeField] private BattleState currentBattleState;
+    [SerializeField] private Camera battleCamera;
+    public Camera BattleCamera => battleCamera; // Public getter for the battle camera, so other scripts can raycast against it when player clicks on enemies during battle
     private Camera dungeonCamera; // Reference to the main camera to turn it off during battle
     private AudioListener dungeonListener; // Reference to the main audio listener to turn it off during battle
 
@@ -191,6 +192,13 @@ public class BattleManager : MonoBehaviour
             StartMenuInputForCurrentAlly(); // Recursively check the next person
             return;
         }
+    }
+
+    // Called by BattleUiController after player selects an action and target for the current ally, to advance to the next ally's turn.
+    public void NextAlly()
+    {
+        currentAllyIndex++;
+        StartMenuInputForCurrentAlly();
     }
 
     /// <summary>

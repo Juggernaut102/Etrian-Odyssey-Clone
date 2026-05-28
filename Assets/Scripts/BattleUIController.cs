@@ -2,9 +2,18 @@ using UnityEngine;
 
 public class BattleUIController : MonoBehaviour
 {
-    // Temporary slots to remember the current selection state
+    public enum UIState
+    {
+        Idle,   // will this state be used?
+        SelectingAction,
+        SelectingTarget
+    }
+
+    [SerializeField] private UIState currentUiState = UIState.SelectingAction; // or selecting action?
     [SerializeField] private BattleEntity currentAttacker;
     private BattleEntity currentTarget;
+
+    public UIState CurrentUiState => currentUiState;
 
     /// <summary>
     /// Hook this up to the physical UI "Attack" Button asset.
@@ -24,6 +33,8 @@ public class BattleUIController : MonoBehaviour
     /// </summary>
     public void OnClickEnemySprite(BattleEntity clickedEnemy)
     {
+        if (currentUiState != UIState.SelectingTarget) return;
+
         currentTarget = clickedEnemy;
         Debug.Log($"UI: Target selected: {currentTarget.EntityName}");
 
@@ -32,6 +43,31 @@ public class BattleUIController : MonoBehaviour
         AdvanceToNextPartyMember();
     }
 
-    private void EnterTargetSelectionMode() { /* Highlight enemy sprites */ }
-    private void AdvanceToNextPartyMember() { /* Reset slots for next character */ }
+    private void EnterTargetSelectionMode() 
+    {
+        currentUiState = UIState.SelectingTarget;
+
+        // Get the list of clickable enemy sprites from EnemyClickTarget components in the scene and enable their click detection
+        EnemyClickTarget[] clickables = FindObjectsByType<EnemyClickTarget>(FindObjectsSortMode.None);
+        foreach (EnemyClickTarget enemyUI in clickables)
+        {
+            enemyUI.ToggleHighlight(true);
+        }
+    }
+
+    private void AdvanceToNextPartyMember() 
+    {
+        currentUiState = UIState.SelectingAction;
+        currentAttacker = null;
+        currentTarget = null;
+
+        // Get the list of clickable enemy sprites from EnemyClickTarget components in the scene and disable their click detection
+        EnemyClickTarget[] clickables = FindObjectsByType<EnemyClickTarget>(FindObjectsSortMode.None);
+        foreach (EnemyClickTarget enemyUI in clickables)
+        {
+            enemyUI.ToggleHighlight(false);
+        }
+
+        BattleManager.Instance.NextAlly();
+    }
 }
