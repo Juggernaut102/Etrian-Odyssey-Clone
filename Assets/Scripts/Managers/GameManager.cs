@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
     private GameState prevGameState; // Used to store the previous game state when pausing
 
     [Header("Battle info")]
-    public Vector2Int LastBattlePosition { get; private set; }
+    public Vector2Int? LastBattlePosition { get; private set; }
     public static event Action<bool> OnBattleEnd;
 
 
@@ -273,8 +273,7 @@ public class GameManager : MonoBehaviour
         OnBattleEnd?.Invoke(playerVictory);
         SceneManager.UnloadSceneAsync(battleSceneName);
         UpdateGameState(GameState.Explore);
-
-        
+        LastBattlePosition = null;
     }
 
     /// <summary>

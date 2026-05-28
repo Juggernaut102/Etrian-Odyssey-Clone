@@ -37,7 +37,7 @@ public class FoeController : MonoBehaviour
 
     private void HandleBattleResolution(bool playerVictory)
     {
-        if (foe.CurrentGridPosition == GameManager.Instance.LastBattlePosition)
+        if (GameManager.Instance.LastBattlePosition != null && foe.CurrentGridPosition == GameManager.Instance.LastBattlePosition)
         {
             if (playerVictory)
             {

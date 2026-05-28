@@ -16,6 +16,6 @@ MonoBehaviour:
   maxHealth: 100
   attackPower: 10
   speed: 2
-  enemyPrefabLayout: {fileID: 4713732376495984677, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+  enemyPrefabLayout: {fileID: 5600972243260090484, guid: 66b36f570d002b64aaaafc7b7e6187ba, type: 3}
   xpReward: 100
-  goldReward: 0
+  goldReward: 10

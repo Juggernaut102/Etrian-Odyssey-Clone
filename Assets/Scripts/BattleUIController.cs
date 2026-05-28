@@ -63,9 +63,11 @@ public class BattleUIController : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             BattleEntity targetedEnemy = hit.collider.GetComponent<BattleEntity>();
+            EnemyVisuals visual = hit.collider.GetComponent<EnemyVisuals>();
+
             if (targetedEnemy != null)
             {
-                OnClickEnemySprite(targetedEnemy);
+                OnClickEnemySprite(targetedEnemy, visual);
             }
         }
     }
@@ -134,12 +136,14 @@ public class BattleUIController : MonoBehaviour
     /// Call when the player physically clicks on an enemy's 3D model or 2D sprite.
     /// Sends the selected target back to the BattleManager to be added to the turn queue, then advances to the next party member's turn.
     /// </summary>
-    public void OnClickEnemySprite(BattleEntity clickedEnemy)
+    public void OnClickEnemySprite(BattleEntity clickedEnemy, EnemyVisuals visual)
     {
         if (currentUiState != UIState.SelectingTarget) return;
 
         currentTarget = clickedEnemy;
         Debug.Log($"UI: Target selected: {currentTarget.EntityName}");
+
+        visual.ToggleHighlight(false);
 
         BattleManager.Instance.CommandPlayerAttack(currentAttacker, currentTarget);
 
