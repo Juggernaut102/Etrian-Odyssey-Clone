@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : GridMovement
 {
@@ -7,6 +8,8 @@ public class PlayerMovement : GridMovement
 
     private InputSystem_Actions controls;
     private Vector2 inputVector;
+    private bool isInputHeld = false;
+    private Coroutine movementRoutine;
 
     protected override void Awake()
     {
@@ -19,8 +22,8 @@ public class PlayerMovement : GridMovement
         if (controls != null)
         {
             controls.Player.Enable();
-            controls.Player.Move.performed += ctx => inputVector = ctx.ReadValue<Vector2>();    // Subscribe custom method to the event signature
-            controls.Player.Move.canceled += ctx => inputVector = Vector2.zero;                 // Reset input when movement is canceled
+            controls.Player.Move.performed += OnInputPressed;
+            controls.Player.Move.canceled += OnInputReleased;
         }
     }
 
@@ -28,24 +31,55 @@ public class PlayerMovement : GridMovement
     {
         if (controls != null)
         {
-            controls.Player.Move.performed -= ctx => inputVector = ctx.ReadValue<Vector2>();   // Unsubscribe to prevent memory leaks
-            controls.Player.Move.canceled -= ctx => inputVector = Vector2.zero;
+            controls.Player.Move.performed -= OnInputPressed;
+            controls.Player.Move.canceled -= OnInputReleased;
             controls.Player.Disable();
         }
     }
 
     // Beginning of custom method that handles movement input
-    void Update()
+    private void OnInputPressed(InputAction.CallbackContext context)
     {
-        OnMove();
+        isInputHeld = true;
+        inputVector = context.ReadValue<Vector2>();
+
+        if (movementRoutine == null)
+        {
+            movementRoutine = StartCoroutine(ContinuousMovementEngine());
+        }
+     }
+
+    private void OnInputReleased(InputAction.CallbackContext context)
+    {
+        isInputHeld = false;
+        inputVector = Vector2.zero; // Reset input vector when movement input is released
     }
 
-    private void OnMove()
+    /// <summary>
+    /// This loop runs in the background ONLY while the button is held.
+    /// </summary>
+    private System.Collections.IEnumerator ContinuousMovementEngine()
     {
-        if (GameManager.Instance.CurrentState != GameManager.GameState.Explore) return; // Only allow movement when in exploring state
+        while (isInputHeld)
+        {
+            if (!isMoving && GameManager.Instance.CurrentState == GameManager.GameState.Explore)
+            {
+                ExecuteMovementCalculation();
 
-        if (isMoving) return; // Prevent starting a new move while already moving
+                yield return new WaitUntil(() => !isMoving); // Wait until the current movement is finished before allowing the next one))
+            }
+            else
+            {
+                yield return null;
 
+            }
+        }
+
+        movementRoutine = null; // Reset the routine reference when input is released
+    }
+
+    private void ExecuteMovementCalculation()
+    {
         if (Mathf.Abs(inputVector.y) > 0.5f)
         {
             Vector3 direction = transform.forward * Mathf.Sign(inputVector.y) * gridSize; // Move forward/backward based on input
@@ -53,7 +87,7 @@ public class PlayerMovement : GridMovement
             Vector3 targetPosition = startPosition + direction;
 
             // Collision detection
-            // We lift the start/end points up slightly (Vector3.up * 0.5f) so the line doesn't scrape the floor
+            // Lift the start/end points up slightly (Vector3.up * 0.5f) so the line doesn't scrape the floor
             Vector3 lineStart = startPosition + (Vector3.up * 0.5f);
             Vector3 lineEnd = targetPosition + (Vector3.up * 0.5f);
             if (Physics.Linecast(lineStart, lineEnd, wallLayer))
