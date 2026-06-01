@@ -11,6 +11,7 @@ public class FoeMovement : GridMovement
     {
         if (isMoving || pathWaypoints == null || pathWaypoints.Count == 0) return; // Don't move if already moving or if no waypoints are set
         Vector2Int targetWaypoint = pathWaypoints[currentWaypointIndex];
+        this.PreviousGridPosition = this.CurrentGridPosition; // Store the current grid position before moving
         Vector3 targetWorldPosition = new Vector3(targetWaypoint.x * gridSize, transform.position.y, targetWaypoint.y * gridSize); // Convert grid coordinates to world position
         StartCoroutine(MoveEntity(targetWorldPosition)); // Move towards the current waypoint
         currentWaypointIndex = (currentWaypointIndex + 1) % pathWaypoints.Count; // Loop to the next waypoint, wrapping around to the start

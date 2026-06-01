@@ -25,8 +25,8 @@ public class FoeController : MonoBehaviour
 
     private void CheckForCombatIntersection()
     {
-        // Not complete, must check if player and foe cross paths during movement, not just if they end on the same tile. This is just a placeholder for now to trigger battle when they end on the same tile.
-        if (foe.CurrentGridPosition == player.CurrentGridPosition)
+        if (foe.CurrentGridPosition == player.CurrentGridPosition ||
+            (foe.PreviousGridPosition == player.CurrentGridPosition && player.PreviousGridPosition == foe.CurrentGridPosition))
         {
             this.enabled = false;
             this.gameObject.SetActive(false);

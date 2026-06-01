@@ -98,6 +98,7 @@ public class PlayerMovement : GridMovement
             }
             else
             {
+                this.PreviousGridPosition = this.CurrentGridPosition; // Store the current grid position before moving
                 StartCoroutine(MoveEntity(targetPosition));
                 OnMovementComplete(new Vector2Int(
                     Mathf.RoundToInt(targetPosition.x / 4),
