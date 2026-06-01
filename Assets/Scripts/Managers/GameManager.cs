@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -185,7 +186,8 @@ public class GameManager : MonoBehaviour
     private void HandleExplore()
     {
         Time.timeScale = 1f; // Ensure game time is running
-        GetComponent<PlayerInput>().SwitchCurrentActionMap("Player"); // Switch to player controls
+        StartCoroutine(SwitchMapSafe("Player"));    // Switch to player controls
+        //GetComponent<PlayerInput>().SwitchCurrentActionMap("Player"); // Switch to player controls
         if (UiManager.Instance != null) UiManager.Instance.SetExplorationHUD();
         Debug.Log("Beginnning exploration!");
 
@@ -194,7 +196,8 @@ public class GameManager : MonoBehaviour
     private void HandleBattle()
     {
         Time.timeScale = 1f;    // Leave game time running for dungeon enemies to join battle
-        GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); // Switch to UI controls for battle
+        StartCoroutine(SwitchMapSafe("UI"));    // Switch to UI controls for battle
+        // GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); // Switch to UI controls for battle
         if (UiManager.Instance != null) UiManager.Instance.SetBattleHUD();
         Debug.Log("Entering battle!");
     }
@@ -202,7 +205,8 @@ public class GameManager : MonoBehaviour
     private void HandlePaused()
     {
         Time.timeScale = 0f; // Pause game time when paused
-        GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); // Switch to UI controls
+        StartCoroutine(SwitchMapSafe("UI"));    // Switch to UI controls
+        // GetComponent<PlayerInput>().SwitchCurrentActionMap("UI"); 
         if (UiManager.Instance != null) UiManager.Instance.SetMenuUI();
         Debug.Log("Menu opened!");
     }
@@ -241,6 +245,17 @@ public class GameManager : MonoBehaviour
     public void ResumeGame()
     {
         UpdateGameState(prevGameState);
+    }
+
+    // this is a workaround to ensure that we don't switch action maps while the Input System is in the middle of processing input events, which can cause errors.
+    // By waiting until the end of the frame, we can ensure that all input events have been processed before switching maps.
+    private IEnumerator SwitchMapSafe(string map)
+    {
+        // Wait until the end of the current frame to ensure that the Input System has finished processing the current input events
+        yield return null;
+
+        // Now that the Input System is done iterating, it is safe to swap maps
+        GetComponent<PlayerInput>().SwitchCurrentActionMap(map);
     }
 
     /// <summary>

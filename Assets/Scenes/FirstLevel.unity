@@ -2036,6 +2036,7 @@ MonoBehaviour:
   wallLayer:
     serializedVersion: 2
     m_Bits: 8
+  currentGridPosition: {x: 0, y: 0}
   rotateSpeed: 180
 --- !u!1001 &1798341310
 PrefabInstance:
@@ -2287,6 +2288,58 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[0].y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[1].y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[2].y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[3].y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[4].y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[5].y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[6].y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[7].y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[8].y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[9].y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[10].y
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3061349445113795833, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
+      propertyPath: pathWaypoints.Array.data[11].y
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 4713732376495984677, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
       propertyPath: m_Name
       value: FOE_Overworld
@@ -2305,7 +2358,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8532188726002341688, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8
+      value: -4
       objectReference: {fileID: 0}
     - target: {fileID: 8532188726002341688, guid: bf4322888b28ced4089bda5b8aebabbb, type: 3}
       propertyPath: m_LocalRotation.w
