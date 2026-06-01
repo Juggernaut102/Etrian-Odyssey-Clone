@@ -1,6 +1,7 @@
 using UnityEngine;
 
-// Singleton class used to manage game audio, such as background music and sound effects. This class can be expanded to include methods for playing specific sounds, adjusting volume, and handling audio transitions.
+// Singleton class used to manage game audio, such as background music and sound effects.
+// This class can be expanded to include methods for playing specific sounds, adjusting volume, and handling audio transitions.
 public class AudioManager : MonoBehaviour
 {
     private static AudioManager instance;
