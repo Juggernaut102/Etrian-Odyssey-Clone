@@ -34,4 +34,10 @@ public class EnemyEntity : BattleEntity
 
         return plannedMove;
     }
+
+    public override void Die()
+    {
+        base.Die();
+        Destroy(gameObject); // Destroy the enemy game object when it dies
+    }
 }

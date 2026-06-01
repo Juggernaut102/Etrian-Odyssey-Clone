@@ -73,6 +73,8 @@ public class BattleManager : MonoBehaviour
     private BattleEntity currentAlly;
     private List<CombatAction> actionTurnQueue = new List<CombatAction>(); // List to hold all combat actions chosen by player and enemies during the turn, which will be sorted and resolved at the end of the turn>
 
+    public int Damage = 10; // Placeholder variable for damage amount, to be replaced with actual calculations based on character stats and action types.
+
 
     private void Awake()
     {
@@ -91,7 +93,7 @@ public class BattleManager : MonoBehaviour
     {
         currentBattleState = BattleState.Initializing;
 
-        HandleCameraAndAudio();
+        InitializeBattleCameraAndAudio();
 
         PopulatePlayerParty();
         PopulateEnemyForces(enemyTroop);
@@ -100,15 +102,22 @@ public class BattleManager : MonoBehaviour
         EnterPlayerTurn();
     }
 
+    public void ReinforceBattle(EncounterProfile enemyTroop)
+    {
+        int slotsLeft = enemySpawnPoints.Length - activeEnemies.Count;
+
+        SpawnEnemy(enemyTroop, slotsLeft);
+    }
+
     private void PopulatePlayerParty()
     {
         activeAllies.Clear();
 
-        // FUTURE-PROOFING: Replace this placeholder loop with a call to your 
-        // PartyManager/GameManager when you build your persistent navigation systems!
+        // FUTURE-PROOFING: Replace this placeholder loop with a call to 
+        // PartyManager/GameManager when building persistent navigation systems!
         // e.g., List<PlayerProfile> currentParty = PartyManager.Instance.GetActiveParty();
 
-        // For now, let's find any existing PlayerEntity scripts already sitting in our combat scene asset:
+        // For now, let's find any existing PlayerEntity scripts already sitting in combat scene asset:
         PlayerEntity[] sceneHeroes = FindObjectsByType<PlayerEntity>(FindObjectsSortMode.None);
         foreach (PlayerEntity hero in sceneHeroes)
         {
@@ -252,7 +261,21 @@ public class BattleManager : MonoBehaviour
             Debug.Log($"Executing action: {action.user.name} uses {action.actionName} on {action.target.name}.");
             action.ExecuteActionLogic?.Invoke(); // Execute the logic for this action, which will apply its effects to the game state (damage, status effects, etc.)
 
-            if (IsBattleOver()) return;
+            // Sweeps the list and removes any element where the Unity object has been destroyed
+            activeAllies.RemoveAll(ally => ally == null || !ally.IsAlive());
+            activeEnemies.RemoveAll(enemy => enemy == null || !enemy.IsAlive());
+
+            if (IsPlayerDefeated())
+            {
+                OnBattleLoss();
+                return;
+            }
+
+            if (HasPlayerWon())
+            {
+                Win();
+                return;
+            }
         }
         actionTurnQueue.Clear();
 
@@ -264,26 +287,28 @@ public class BattleManager : MonoBehaviour
 
     public void Win()
     {
-        if (dungeonCamera != null) dungeonCamera.gameObject.SetActive(true); // Turn the camera back on when battle is finished
-        if (dungeonListener != null) dungeonListener.enabled = true; // Turn the audio listener back on when battle is finished
+        Debug.Log("Player has won the battle! Exiting Battle Scene!");
+        CleanUpBatleScene();
         GameManager.Instance.ExitBattle(true); // Notify GameManager to return to exploration mode
     }
 
     public void Flee()
     {
-        if (dungeonCamera != null) dungeonCamera.gameObject.SetActive(true); // Turn the camera back on when battle is finished
-        if (dungeonListener != null) dungeonListener.enabled = true; // Turn the audio listener back on when battle is finished
+        Debug.Log("Player has fled the battle! Exiting Battle Scene!");
+        CleanUpBatleScene();
         GameManager.Instance.ExitBattle(false); // Notify GameManager to return to exploration mode
     }
 
     public void OnBattleLoss()
     {
-        if (dungeonCamera != null) dungeonCamera.gameObject.SetActive(true); // Turn the camera back on when battle is finished
-        if (dungeonListener != null) dungeonListener.enabled = true; // Turn the audio listener back on when battle is finished
+        Debug.Log("Player has lost the battle! What a noob! Exiting Battle Scene!");
+        CleanUpBatleScene();
         GameManager.Instance.GameOver(); // Notify GameManager to trigger game over state
     }
 
-    private bool IsBattleOver() => false; // placeholder
+    private bool IsPlayerDefeated() => activeAllies.Count == 0;
+
+    private bool HasPlayerWon() => activeEnemies.Count == 0;
 
     /// <summary>
     /// The UI Controller will call this method when the player clicks "Attack"
@@ -296,12 +321,12 @@ public class BattleManager : MonoBehaviour
         plannedMove.target = target;
         plannedMove.speed = attacker.Speed;
 
-        plannedMove.ExecuteActionLogic = () => plannedMove.target.TakeDamage(15);
+        plannedMove.ExecuteActionLogic = () => plannedMove.target.TakeDamage(Damage);
 
         RegisterPlayerAction(plannedMove);
     }
 
-    private void HandleCameraAndAudio()
+    private void InitializeBattleCameraAndAudio()
     {
         dungeonCamera = Camera.main;
         if (dungeonCamera != null)
@@ -310,6 +335,12 @@ public class BattleManager : MonoBehaviour
             dungeonCamera.gameObject.SetActive(false);
         }
         if (dungeonListener != null) dungeonListener.enabled = false;
+    }
+
+    private void CleanUpBatleScene()
+    {
+        if (dungeonCamera != null) dungeonCamera.gameObject.SetActive(true); // Turn the camera back on when battle is finished
+        if (dungeonListener != null) dungeonListener.enabled = true; // Turn the audio listener back on when battle is finished
     }
 
     public BattleEntity GetCurrentAttacker() => currentAlly;
