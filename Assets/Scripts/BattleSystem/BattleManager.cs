@@ -113,7 +113,7 @@ public class BattleManager : MonoBehaviour
     {
         activeAllies.Clear();
 
-        // FUTURE-PROOFING: Replace this placeholder loop with a call to 
+        // FUTURE-PROOFING: Replace this placeholder loop with a call to
         // PartyManager/GameManager when building persistent navigation systems!
         // e.g., List<PlayerProfile> currentParty = PartyManager.Instance.GetActiveParty();
 
@@ -133,24 +133,31 @@ public class BattleManager : MonoBehaviour
     {
         activeEnemies.Clear();
 
-        if (enemySpawnPoints.Length == 0)
+        SpawnEnemy(enemyTroop, enemySpawnPoints.Length);
+    }
+
+    private void SpawnEnemy(EncounterProfile enemyTroop, int slotsAvailable)
+    {
+        if (slotsAvailable == 0)
         {
-            Debug.LogError("Missing spawn anchors on the BattleManager!");
+            Debug.LogError("No slots avaiable! Implementing queuing system! (not implemented yet)");
             return;
         }
 
-        for (int i = 0; i < enemyTroop.EnemiesInTroop.Count; i++ )
+        for (int i = 0; i < enemyTroop.EnemiesInTroop.Count; i++)
         {
-            if (i >= enemySpawnPoints.Length)
+            if (i >= slotsAvailable)
             {
                 Debug.LogWarning("Not enough spawn points for all enemies! Only spawning first " + i + " out of " + enemyTroop.EnemiesInTroop.Count);
                 break;
             }
 
             EnemyProfile currentEnemyProfile = enemyTroop.EnemiesInTroop[i];
-            Transform anchor = enemySpawnPoints[i];
+            int anchorIndex = enemySpawnPoints.Length - slotsAvailable + i;
+            Transform anchor = enemySpawnPoints[anchorIndex];
+            Vector3 spawnPosition = anchor.position + (Vector3.down * 1f);
 
-            GameObject newEnemyObj = Instantiate(currentEnemyProfile.EnemyPrefabLayout, anchor.position, anchor.rotation);
+            GameObject newEnemyObj = Instantiate(currentEnemyProfile.EnemyPrefabLayout, spawnPosition, anchor.rotation, anchor);
             EnemyEntity enemyActor = newEnemyObj.GetComponent<EnemyEntity>();
 
             if (enemyActor == null)
@@ -159,7 +166,7 @@ public class BattleManager : MonoBehaviour
                 continue;
             }
 
-            enemyActor.Initialize(currentEnemyProfile); 
+            enemyActor.Initialize(currentEnemyProfile);
             activeEnemies.Add(enemyActor);
         }
     }

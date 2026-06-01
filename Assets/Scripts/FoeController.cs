@@ -31,7 +31,14 @@ public class FoeController : MonoBehaviour
         // Not complete, must check if player and foe cross paths during movement, not just if they end on the same tile. This is just a placeholder for now to trigger battle when they end on the same tile.
         if (foe.CurrentGridPosition == player.CurrentGridPosition)
         {
-            GameManager.Instance.EnterBattle(profile, foe.CurrentGridPosition);
+            if (GameManager.Instance.CurrentState != GameManager.GameState.Battle)
+            {
+                GameManager.Instance.EnterBattle(profile, foe.CurrentGridPosition);
+            }
+            else
+            {
+                GameManager.Instance.Reinforce(profile, foe.CurrentGridPosition);
+            }
         }
     }
 

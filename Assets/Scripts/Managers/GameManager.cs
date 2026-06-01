@@ -246,6 +246,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Sends the player to the battle scene when battle starts. 
     /// This should be called by the BattleManager when the battle is initiated.
+    /// For reinforcements joining mid-battle, the Reinforce method is called instead, which does not require loading a new scene.
     /// </summary>
     public void EnterBattle(EncounterProfile enemyTroop, Vector2Int combatTile)
     {
@@ -261,6 +262,13 @@ public class GameManager : MonoBehaviour
             if (battleManager != null) battleManager.InitializeBattle(enemyTroop);
             else Debug.LogError("BattleManager not found in scene after loading battle scene! Please ensure a BattleManager component is present in the battle scene.");
         };
+    }
+
+    public void Reinforce(EncounterProfile enemyTroop, Vector2Int combatTile)
+    {
+        BattleManager battleManager = FindFirstObjectByType<BattleManager>();
+        if (battleManager != null) battleManager.ReinforceBattle(enemyTroop);
+        else Debug.LogError("BattleManager not found in scene after loading battle scene! Please ensure a BattleManager component is present in the battle scene.");
     }
 
     /// <summary>
