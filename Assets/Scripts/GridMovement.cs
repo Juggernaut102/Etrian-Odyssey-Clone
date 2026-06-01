@@ -8,14 +8,16 @@ public abstract class GridMovement : MonoBehaviour
     [SerializeField] protected float gridSize = 4f;
     [SerializeField] protected LayerMask wallLayer;
 
-    protected Vector2Int currentGridPosition; // Starting grid position
+    [SerializeField] protected Vector2Int currentGridPosition; // SerializeField for debugging purposes, can be hidden in final version
     public Vector2Int CurrentGridPosition => currentGridPosition; // Public getter for current grid position
 
     protected bool isMoving = false;
 
     protected virtual void Awake()
     {
-        UpdateCurrentGridPosition();                    // Set the initial grid position based on the starting transform
+        UpdateCurrentGridPosition(new Vector2Int(
+            Mathf.RoundToInt(transform.position.x / 4),
+            Mathf.RoundToInt(transform.position.z / 4))); // Set the initial grid position based on the starting transform
     }
 
     // Coroutine definitions for smooth movement to the target position
@@ -43,16 +45,14 @@ public abstract class GridMovement : MonoBehaviour
         isMoving = false;
     }
 
-    private void UpdateCurrentGridPosition()
+    private void UpdateCurrentGridPosition(Vector2Int pos)
     {
-        currentGridPosition = new Vector2Int(
-            Mathf.RoundToInt(transform.position.x),
-            Mathf.RoundToInt(transform.position.z)); // Update grid position based on new transform
+        currentGridPosition = pos;
     }
 
     // Triggers after every step taken (not rotation, just forward/backward movement)
-    protected virtual void OnMovementComplete()
+    protected virtual void OnMovementComplete(Vector2Int pos)
     {
-        UpdateCurrentGridPosition(); // Update the current grid position after movement is complete
+        UpdateCurrentGridPosition(pos); // Update the current grid position after movement is complete
     }
 }

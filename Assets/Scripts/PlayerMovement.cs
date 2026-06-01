@@ -40,6 +40,8 @@ public class PlayerMovement : GridMovement
     // Beginning of custom method that handles movement input
     private void OnInputPressed(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.CurrentState != GameManager.GameState.Explore) return;
+
         isInputHeld = true;
         inputVector = context.ReadValue<Vector2>();
 
@@ -97,7 +99,9 @@ public class PlayerMovement : GridMovement
             else
             {
                 StartCoroutine(MoveEntity(targetPosition));
-                OnMovementComplete();
+                OnMovementComplete(new Vector2Int(
+                    Mathf.RoundToInt(targetPosition.x / 4),
+                    Mathf.RoundToInt(targetPosition.z / 4)));
             }
         }
         else if (Mathf.Abs(inputVector.x) > 0.5f)
@@ -131,9 +135,9 @@ public class PlayerMovement : GridMovement
         isMoving = false;
     }
 
-    protected override void OnMovementComplete()
+    protected override void OnMovementComplete(Vector2Int pos)
     {
-        base.OnMovementComplete();
+        base.OnMovementComplete(pos);
         GameManager.Instance.ProcessGlobalTurnTick(); // Notify GameManager to advance the turn after each move
         // GameManager.Instance.CheckForRandomEncounters(); // Check for random encounters after each move
     }
