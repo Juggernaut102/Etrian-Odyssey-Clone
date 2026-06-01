@@ -98,15 +98,16 @@ public class BattleManager : MonoBehaviour
         PopulatePlayerParty();
         PopulateEnemyForces(enemyTroop);
 
-        Debug.Log($"{activeAllies.Count} heroes fighting {activeEnemies.Count} monsters!");
+        Debug.Log($"Battle started! {activeAllies.Count} heroes fighting {activeEnemies.Count} monsters!");
         EnterPlayerTurn();
     }
 
     public void ReinforceBattle(EncounterProfile enemyTroop)
     {
         int slotsLeft = enemySpawnPoints.Length - activeEnemies.Count;
-
         SpawnEnemy(enemyTroop, slotsLeft);
+
+        Debug.Log($"Reinforcements have arrived! {activeAllies.Count} heroes fighting {activeEnemies.Count} monsters!");
     }
 
     private void PopulatePlayerParty()

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -61,9 +63,7 @@ public class GameManager : MonoBehaviour
     private GameState prevGameState; // Used to store the previous game state when pausing
 
     [Header("Battle info")]
-    public Vector2Int? LastBattlePosition { get; private set; }
-    public static event Action<bool> OnBattleEnd;
-
+    private List<FoeController> activeCombatFoes = new List<FoeController>();
 
     /// <summary>
     /// Fires when the player takes a step in the dungeon, or a turn passes in battle
@@ -248,11 +248,12 @@ public class GameManager : MonoBehaviour
     /// This should be called by the BattleManager when the battle is initiated.
     /// For reinforcements joining mid-battle, the Reinforce method is called instead, which does not require loading a new scene.
     /// </summary>
-    public void EnterBattle(EncounterProfile enemyTroop, Vector2Int combatTile)
+    public void EnterBattle(EncounterProfile enemyTroop, FoeController foe)
     {
         UpdateGameState(GameState.Battle);
 
-        LastBattlePosition = combatTile;
+        activeCombatFoes.Clear();
+        activeCombatFoes.Add(foe);
 
         // Load battle scene additively and initialize battle with the given enemy once loading is complete
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(battleSceneName, LoadSceneMode.Additive);
@@ -264,11 +265,30 @@ public class GameManager : MonoBehaviour
         };
     }
 
-    public void Reinforce(EncounterProfile enemyTroop, Vector2Int combatTile)
+    public void Reinforce(EncounterProfile enemyTroop, FoeController foe)
     {
+        activeCombatFoes.Add(foe);
         BattleManager battleManager = FindFirstObjectByType<BattleManager>();
         if (battleManager != null) battleManager.ReinforceBattle(enemyTroop);
         else Debug.LogError("BattleManager not found in scene after loading battle scene! Please ensure a BattleManager component is present in the battle scene.");
+    }
+
+    public void ResolveBattle(bool playerVictory)
+    {
+        foreach (FoeController foe in activeCombatFoes)
+        {
+            if (playerVictory)
+            {
+                foe.Die();
+            }
+            else
+            {
+                Debug.Log("Player fled! Respawning visual mesh and backing away.");
+                foe.gameObject.SetActive(true);
+                foe.enabled = true;
+                // foe.foe.StepAwayFromPlayer(); // i will probably have the player step away instead
+            }
+        }
     }
 
     /// <summary>
@@ -278,10 +298,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ExitBattle(bool playerVictory)
     {
-        OnBattleEnd?.Invoke(playerVictory);
         SceneManager.UnloadSceneAsync(battleSceneName);
         UpdateGameState(GameState.Explore);
-        LastBattlePosition = null;
     }
 
     /// <summary>
