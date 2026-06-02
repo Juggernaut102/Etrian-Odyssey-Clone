@@ -105,7 +105,7 @@ public class BattleManager : MonoBehaviour
     public void ReinforceBattle(EncounterProfile enemyTroop)
     {
         int slotsLeft = enemySpawnPoints.Length - activeEnemies.Count;
-        SpawnEnemy(enemyTroop, slotsLeft);
+        SpawnEnemy(enemyTroop);
 
         Debug.Log($"Reinforcements have arrived! {activeAllies.Count} heroes fighting {activeEnemies.Count} monsters!");
     }
@@ -134,28 +134,50 @@ public class BattleManager : MonoBehaviour
     {
         activeEnemies.Clear();
 
-        SpawnEnemy(enemyTroop, enemySpawnPoints.Length);
+        SpawnEnemy(enemyTroop);
     }
 
-    private void SpawnEnemy(EncounterProfile enemyTroop, int slotsAvailable)
+    private void SpawnEnemy(EncounterProfile enemyTroop)
     {
-        if (slotsAvailable == 0)
+        // Find current empty slots by checking each anchor for children. If it has no children, it's empty. If it has a child but that child is dead/dying, we can also consider it empty (see bulletproofing comment below).
+        List<Transform> freeAnchors = new List<Transform>();
+        foreach (Transform anchor in enemySpawnPoints)
         {
-            Debug.LogError("No slots avaiable! Implementing queuing system! (not implemented yet)");
+            if (anchor.childCount == 0)
+            {
+                freeAnchors.Add(anchor);
+            }
+            else
+            {
+                // BULLETPROOFING: If the anchor has a child, but that child is dead/dying this exact frame, 
+                // we should still consider the slot free!
+                EnemyEntity occupant = anchor.GetComponentInChildren<EnemyEntity>();
+                if (occupant == null || !occupant.IsAlive())
+                {
+                    freeAnchors.Add(anchor);
+                }
+            }
+        }
+
+        if (freeAnchors.Count == 0)
+        {
+            Debug.LogWarning("No slots available! Reinforcements must queue. (not implemented yet oops)");
             return;
         }
 
-        for (int i = 0; i < enemyTroop.EnemiesInTroop.Count; i++)
-        {
-            if (i >= slotsAvailable)
-            {
-                Debug.LogWarning("Not enough spawn points for all enemies! Only spawning first " + i + " out of " + enemyTroop.EnemiesInTroop.Count);
-                break;
-            }
+        int spawnCount = Mathf.Min(enemyTroop.EnemiesInTroop.Count, freeAnchors.Count);
 
+        if (spawnCount < enemyTroop.EnemiesInTroop.Count)
+        {
+            Debug.LogWarning($"Only spawned {spawnCount} out of {enemyTroop.EnemiesInTroop.Count} enemies due to lack of space.");
+        }
+
+        // Execute spawning
+        for (int i = 0; i < spawnCount; i++)
+        {
             EnemyProfile currentEnemyProfile = enemyTroop.EnemiesInTroop[i];
-            int anchorIndex = enemySpawnPoints.Length - slotsAvailable + i;
-            Transform anchor = enemySpawnPoints[anchorIndex];
+
+            Transform anchor = freeAnchors[i];
             Vector3 spawnPosition = anchor.position + (Vector3.down * 1f);
 
             GameObject newEnemyObj = Instantiate(currentEnemyProfile.EnemyPrefabLayout, spawnPosition, anchor.rotation, anchor);
