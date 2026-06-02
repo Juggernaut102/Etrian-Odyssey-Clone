@@ -300,6 +300,7 @@ public class BattleManager : MonoBehaviour
         GameManager.Instance.ExitBattle(true); // Notify GameManager to return to exploration mode
     }
 
+    // flee logic not implemented in battle system yet, but this is where it would go when player clicks "Flee" button in UI
     public void Flee()
     {
         Debug.Log("Player has fled the battle! Exiting Battle Scene!");
