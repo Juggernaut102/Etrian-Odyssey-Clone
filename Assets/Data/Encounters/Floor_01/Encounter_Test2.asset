@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a91151e9c33fa7c46a57811f401b69e8, type: 3}
+  m_Name: Encounter_Test2
+  m_EditorClassIdentifier: Assembly-CSharp::EncounterProfile
+  enemiesInTroop:
+  - {fileID: 11400000, guid: 73d3dd275b422f441bcd7d0300e65b38, type: 2}
+  - {fileID: 11400000, guid: 73d3dd275b422f441bcd7d0300e65b38, type: 2}
+  - {fileID: 11400000, guid: 73d3dd275b422f441bcd7d0300e65b38, type: 2}
+  - {fileID: 11400000, guid: a5c7c7d1ff113c243926f533f0a763f9, type: 2}
+  - {fileID: 11400000, guid: a5c7c7d1ff113c243926f533f0a763f9, type: 2}
+  - {fileID: 11400000, guid: a5c7c7d1ff113c243926f533f0a763f9, type: 2}

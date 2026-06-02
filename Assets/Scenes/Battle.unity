@@ -325,9 +325,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerEntity
   entityName: Player_Test
-  maxHealth: 100
-  currentHealth: 100
-  attackPower: 100
+  maxHealth: 10000
+  currentHealth: 10000
+  attackPower: 1000
   speed: 100
 --- !u!4 &560237876
 Transform:
@@ -688,6 +688,7 @@ MonoBehaviour:
   - {fileID: 347038760}
   - {fileID: 1680302094}
   - {fileID: 1289606730}
+  Damage: 1000
 --- !u!4 &1012086375
 Transform:
   m_ObjectHideFlags: 0

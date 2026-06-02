@@ -1722,6 +1722,56 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1229598571693590739, guid: 5f9f3d706c518c54cbf2b33f623d74c6, type: 3}
   m_PrefabInstance: {fileID: 794562016}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1402640957
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1402640959}
+  - component: {fileID: 1402640958}
+  m_Layer: 0
+  m_Name: Encounter Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1402640958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402640957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc0c3672f6807f540ad4e202a571c1f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EncounterManager
+  meterLimit: 100
+  maxIncrease: 15
+  minIncrease: 5
+  enemyTroops:
+  - {fileID: 11400000, guid: ee25718d4f8409a4692d5939c00d765a, type: 2}
+  - {fileID: 11400000, guid: a317948572a1a9c4c8dde98e3c73a879, type: 2}
+--- !u!4 &1402640959
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402640957}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 14.03142, y: -0, z: -0.07301}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1403082771
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2402,3 +2452,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 192693515}
   - {fileID: 2077597817}
+  - {fileID: 1402640959}

@@ -261,15 +261,19 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Sends the player to the battle scene when battle starts. 
     /// This should be called by the BattleManager when the battle is initiated.
+    /// The 'foe' parameter is optional; omit it for invisible random encounters.
     /// For reinforcements joining mid-battle, the Reinforce method is called instead, which does not require loading a new scene.
     /// </summary>
-    public void EnterBattle(EncounterProfile enemyTroop, FoeController foe)
+    public void EnterBattle(EncounterProfile enemyTroop, FoeController foe = null)
     {
         UpdateGameState(GameState.Battle);
 
         activeCombatFoes.Clear();
-        activeCombatFoes.Add(foe);
-
+        if (foe != null)
+        {
+            activeCombatFoes.Add(foe);
+        }
+        
         // Load battle scene additively and initialize battle with the given enemy once loading is complete
         AsyncOperation loadOp = SceneManager.LoadSceneAsync(battleSceneName, LoadSceneMode.Additive);
         loadOp.completed += (_) =>
@@ -288,7 +292,8 @@ public class GameManager : MonoBehaviour
         else Debug.LogError("BattleManager not found in scene after loading battle scene! Please ensure a BattleManager component is present in the battle scene.");
     }
 
-    public void ResolveBattle(bool playerVictory)
+    // KIV: this implementation doesn't work for fleeing because FOEs killed before fleeing will still be alive after fleeing, which is not intended
+    private void ResolveBattle(bool playerVictory)
     {
         foreach (FoeController foe in activeCombatFoes)
         {
@@ -314,6 +319,7 @@ public class GameManager : MonoBehaviour
     public void ExitBattle(bool playerVictory)
     {
         SceneManager.UnloadSceneAsync(battleSceneName);
+        ResolveBattle(playerVictory);
         UpdateGameState(GameState.Explore);
     }
 
