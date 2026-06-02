@@ -112,6 +112,14 @@ public class PlayerMovement : GridMovement
         }
     }
 
+    protected override System.Collections.IEnumerator MoveEntity(Vector3 targetPosition)
+    {
+        AudioManager.Instance.PlayFootsteps();
+        return base.MoveEntity(targetPosition);
+    }
+
+
+
     System.Collections.IEnumerator RotatePlayer(float angle)
     {
         isMoving = true;
