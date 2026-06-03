@@ -298,6 +298,7 @@ MonoBehaviour:
   titleSceneName: TitleScreen
   firstLevelName: FirstLevel
   battleSceneName: Battle
+  gameOverSceneName: GameOver
 --- !u!114 &2469238877207987209
 MonoBehaviour:
   m_ObjectHideFlags: 0

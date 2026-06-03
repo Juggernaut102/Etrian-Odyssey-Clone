@@ -325,8 +325,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerEntity
   entityName: Player_Test
-  maxHealth: 10000
-  currentHealth: 10000
+  maxHealth: 100
+  currentHealth: 10
   attackPower: 1000
   speed: 100
 --- !u!4 &560237876
