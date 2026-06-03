@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using UnityEngine;
 using static GameManager;
 
@@ -17,5 +18,17 @@ public class TitleController : MonoBehaviour
             UnityEngine.SceneManagement.SceneManager.LoadScene("FirstLevel");
             GameManager.Instance.UpdateGameState(GameState.Explore);
         }
+    }
+
+    public void QuitGame()
+    {
+        // 1. If we are testing inside the Unity Editor, stop playing
+    #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false; // Stop play mode in the editor
+        
+        // 2. If we are playing a compiled build, shut down the application
+    #else
+            Application.Quit();
+    #endif
     }
 }
