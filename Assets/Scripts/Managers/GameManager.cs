@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string titleSceneName; // Remember to assign in editor!!
     [SerializeField] private string firstLevelName; // Remember to assign in editor!!
     [SerializeField] private string battleSceneName; // Remember to assign in editor!!
+    [SerializeField] private string gameOverSceneName; // Remember to assign in editor!!
 
     private GameState prevGameState; // Used to store the previous game state when pausing
 
@@ -214,6 +215,7 @@ public class GameManager : MonoBehaviour
     private void HandleGameOver()
     {
         Time.timeScale = 0f; // Pause game time on game over
+        CurrentTurn = 0; // Reset turn counter for next playthrough
         if (UiManager.Instance != null) UiManager.Instance.SetGameOverUI();
         Debug.Log("Player Died! Game Over.");
     }
@@ -329,6 +331,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GameOver()
     {
+        SceneManager.LoadScene(gameOverSceneName);
         UpdateGameState(GameState.GameOver);
     }
 }
