@@ -6,7 +6,7 @@ public class PlayerMovement : GridMovement
     [Header("Player Movement Settings")]
     [SerializeField] private float rotateSpeed = 180f;
 
-    private InputSystem_Actions controls;
+    private PlayerInputHandler inputHandler;
     private Vector2 inputVector;
     private bool isInputHeld = false;
     private Coroutine movementRoutine;
@@ -14,26 +14,25 @@ public class PlayerMovement : GridMovement
     protected override void Awake()
     {
         base.Awake(); // Call the base class Awake to initialize grid position
-        controls = new InputSystem_Actions(); // Initialize the input actions
+        inputHandler = GetComponent<PlayerInputHandler>();
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        if (controls != null)
+        if (inputHandler != null)
         {
-            controls.Player.Enable();
-            controls.Player.Move.performed += OnInputPressed;
-            controls.Player.Move.canceled += OnInputReleased;
+            inputHandler.Controls.Player.Move.performed += OnInputPressed;
+            inputHandler.Controls.Player.Move.canceled += OnInputReleased;
         }
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
-        if (controls != null)
+        if (inputHandler != null)
         {
-            controls.Player.Move.performed -= OnInputPressed;
-            controls.Player.Move.canceled -= OnInputReleased;
-            controls.Player.Disable();
+            inputHandler.Controls.Player.Move.performed -= OnInputPressed;
+            inputHandler.Controls.Player.Move.canceled -= OnInputReleased;
+
         }
     }
 
@@ -64,11 +63,11 @@ public class PlayerMovement : GridMovement
     {
         while (isInputHeld)
         {
-            if (!isMoving && GameManager.Instance.CurrentState == GameManager.GameState.Explore)
+            if (!IsMoving && GameManager.Instance.CurrentState == GameManager.GameState.Explore)
             {
                 ExecuteMovementCalculation();
 
-                yield return new WaitUntil(() => !isMoving); // Wait until the current movement is finished before allowing the next one))
+                yield return new WaitUntil(() => !IsMoving); // Wait until the current movement is finished before allowing the next one))
             }
             else
             {
@@ -92,7 +91,7 @@ public class PlayerMovement : GridMovement
             // Lift the start/end points up slightly (Vector3.up * 0.5f) so the line doesn't scrape the floor
             Vector3 lineStart = startPosition + (Vector3.up * 0.5f);
             Vector3 lineEnd = targetPosition + (Vector3.up * 0.5f);
-            if (Physics.Linecast(lineStart, lineEnd, wallLayer))
+            if (Physics.Linecast(lineStart, lineEnd, wallLayer | interactLayer))
             {
                 AudioManager.Instance.PlayWallThud(gridSize / moveSpeed);
             }
@@ -122,7 +121,7 @@ public class PlayerMovement : GridMovement
 
     System.Collections.IEnumerator RotatePlayer(float angle)
     {
-        isMoving = true;
+        IsMoving = true;
 
         AudioManager.Instance.PlayFootsteps();
 
@@ -141,7 +140,7 @@ public class PlayerMovement : GridMovement
         }
 
         transform.rotation = targetRotation; // Snap perfectly to 90-degree rotation
-        isMoving = false;
+        IsMoving = false;
     }
 
     protected override void OnMovementComplete(Vector2Int pos)

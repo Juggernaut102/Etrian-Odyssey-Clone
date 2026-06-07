@@ -7,11 +7,12 @@ public abstract class GridMovement : MonoBehaviour
     [SerializeField] protected float moveSpeed = 10f;
     [SerializeField] protected float gridSize = 4f;
     [SerializeField] protected LayerMask wallLayer;
+    [SerializeField] protected LayerMask interactLayer; 
     public Vector2Int PreviousGridPosition { get; protected set; }
     [SerializeField] protected Vector2Int currentGridPosition; // SerializeField for debugging purposes, can be hidden in final version
     public Vector2Int CurrentGridPosition => currentGridPosition;
 
-    protected bool isMoving = false;
+    public bool IsMoving { get; protected set;  }
 
     protected virtual void Awake()
     {
@@ -23,7 +24,7 @@ public abstract class GridMovement : MonoBehaviour
     // Coroutine definitions for smooth movement to the target position
     protected virtual System.Collections.IEnumerator MoveEntity(Vector3 targetPosition)
     {
-        isMoving = true;
+        IsMoving = true;
 
         Vector3 startPosition = transform.position;
 
@@ -40,7 +41,7 @@ public abstract class GridMovement : MonoBehaviour
         }
 
         transform.position = targetPosition; // Snap perfectly to grid anchor
-        isMoving = false;
+        IsMoving = false;
     }
 
     private void UpdateCurrentGridPosition(Vector2Int pos)
