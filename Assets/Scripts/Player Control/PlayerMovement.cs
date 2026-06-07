@@ -6,7 +6,7 @@ public class PlayerMovement : GridMovement
     [Header("Player Movement Settings")]
     [SerializeField] private float rotateSpeed = 180f;
 
-    private InputSystem_Actions controls;
+    private PlayerInputHandler inputHandler;
     private Vector2 inputVector;
     private bool isInputHeld = false;
     private Coroutine movementRoutine;
@@ -14,26 +14,25 @@ public class PlayerMovement : GridMovement
     protected override void Awake()
     {
         base.Awake(); // Call the base class Awake to initialize grid position
-        controls = new InputSystem_Actions(); // Initialize the input actions
+        inputHandler = GetComponent<PlayerInputHandler>();
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        if (controls != null)
+        if (inputHandler != null)
         {
-            controls.Player.Enable();
-            controls.Player.Move.performed += OnInputPressed;
-            controls.Player.Move.canceled += OnInputReleased;
+            inputHandler.Controls.Player.Move.performed += OnInputPressed;
+            inputHandler.Controls.Player.Move.canceled += OnInputReleased;
         }
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
-        if (controls != null)
+        if (inputHandler != null)
         {
-            controls.Player.Move.performed -= OnInputPressed;
-            controls.Player.Move.canceled -= OnInputReleased;
-            controls.Player.Disable();
+            inputHandler.Controls.Player.Move.performed -= OnInputPressed;
+            inputHandler.Controls.Player.Move.canceled -= OnInputReleased;
+
         }
     }
 
@@ -92,7 +91,7 @@ public class PlayerMovement : GridMovement
             // Lift the start/end points up slightly (Vector3.up * 0.5f) so the line doesn't scrape the floor
             Vector3 lineStart = startPosition + (Vector3.up * 0.5f);
             Vector3 lineEnd = targetPosition + (Vector3.up * 0.5f);
-            if (Physics.Linecast(lineStart, lineEnd, wallLayer))
+            if (Physics.Linecast(lineStart, lineEnd, wallLayer | interactLayer))
             {
                 AudioManager.Instance.PlayWallThud(gridSize / moveSpeed);
             }

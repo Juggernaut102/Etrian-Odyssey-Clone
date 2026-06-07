@@ -7,6 +7,7 @@ public abstract class GridMovement : MonoBehaviour
     [SerializeField] protected float moveSpeed = 10f;
     [SerializeField] protected float gridSize = 4f;
     [SerializeField] protected LayerMask wallLayer;
+    [SerializeField] protected LayerMask interactLayer; 
     public Vector2Int PreviousGridPosition { get; protected set; }
     [SerializeField] protected Vector2Int currentGridPosition; // SerializeField for debugging purposes, can be hidden in final version
     public Vector2Int CurrentGridPosition => currentGridPosition;

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// This class represents a chest event in the game. It implements the IInteractable interface, allowing players to interact with it.
 public class ChestEvent : MonoBehaviour, IInteractable
 {
     [SerializeField] private bool isOpen = false;
