@@ -64,11 +64,11 @@ public class PlayerMovement : GridMovement
     {
         while (isInputHeld)
         {
-            if (!isMoving && GameManager.Instance.CurrentState == GameManager.GameState.Explore)
+            if (!IsMoving && GameManager.Instance.CurrentState == GameManager.GameState.Explore)
             {
                 ExecuteMovementCalculation();
 
-                yield return new WaitUntil(() => !isMoving); // Wait until the current movement is finished before allowing the next one))
+                yield return new WaitUntil(() => !IsMoving); // Wait until the current movement is finished before allowing the next one))
             }
             else
             {
@@ -122,7 +122,7 @@ public class PlayerMovement : GridMovement
 
     System.Collections.IEnumerator RotatePlayer(float angle)
     {
-        isMoving = true;
+        IsMoving = true;
 
         AudioManager.Instance.PlayFootsteps();
 
@@ -141,7 +141,7 @@ public class PlayerMovement : GridMovement
         }
 
         transform.rotation = targetRotation; // Snap perfectly to 90-degree rotation
-        isMoving = false;
+        IsMoving = false;
     }
 
     protected override void OnMovementComplete(Vector2Int pos)

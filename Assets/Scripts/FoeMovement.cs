@@ -9,7 +9,7 @@ public class FoeMovement : GridMovement
 
     public void Move()
     {
-        if (isMoving || pathWaypoints == null || pathWaypoints.Count == 0) return; // Don't move if already moving or if no waypoints are set
+        if (IsMoving || pathWaypoints == null || pathWaypoints.Count == 0) return; // Don't move if already moving or if no waypoints are set
         Vector2Int targetWaypoint = pathWaypoints[currentWaypointIndex];
         this.PreviousGridPosition = this.CurrentGridPosition; // Store the current grid position before moving
         Vector3 targetWorldPosition = new Vector3(targetWaypoint.x * gridSize, transform.position.y, targetWaypoint.y * gridSize); // Convert grid coordinates to world position
