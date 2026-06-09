@@ -66,15 +66,13 @@ public class BattleManager : MonoBehaviour
 
     [Header("Spawning Anchors")]
     [SerializeField] private Transform[] enemySpawnPoints;
+    [SerializeField] private Transform allySpawnPoint; // Not currently used, but could be used in the future to allow for different battle formations or reinforcements
 
     [Header("Turn Variables")]
     private int currentTurn = 0; // Variable to track (and display?) battle turn order
     private int currentAllyIndex = 0; // Variable to track which party member is currently selecting their action during player turn
     private BattleEntity currentAlly;
-    private List<CombatAction> actionTurnQueue = new List<CombatAction>(); // List to hold all combat actions chosen by player and enemies during the turn, which will be sorted and resolved at the end of the turn>
-
-    public int Damage = 10; // Placeholder variable for damage amount, to be replaced with actual calculations based on character stats and action types.
-
+    private List<CombatAction> actionTurnQueue = new List<CombatAction>(); // List to hold all combat actions chosen by player and enemies during the turn, which will be sorted and resolved at the end of the turn
 
     private void Awake()
     {
@@ -114,18 +112,18 @@ public class BattleManager : MonoBehaviour
     {
         activeAllies.Clear();
 
-        // FUTURE-PROOFING: Replace this placeholder loop with a call to
-        // PartyManager/GameManager when building persistent navigation systems!
-        // e.g., List<PlayerProfile> currentParty = PartyManager.Instance.GetActiveParty();
+        List<CharacterRuntimeData> currentParty = PartyManager.Instance.LivePartyData;
 
-        // For now, let's find any existing PlayerEntity scripts already sitting in combat scene asset:
-        CharacterEntity[] sceneHeroes = FindObjectsByType<CharacterEntity>(FindObjectsSortMode.None);
-        foreach (CharacterEntity hero in sceneHeroes)
+        foreach (CharacterRuntimeData heroData in currentParty)
         {
             // If they are alive, register them to act this turn round!
-            if (hero.IsAlive())
+            if (heroData.IsAlive)
             {
-                activeAllies.Add(hero);
+                GameObject emptyObj = new GameObject($"Player_{heroData.EntityName}");
+                emptyObj.transform.SetParent(allySpawnPoint);
+                CharacterEntity newHero = emptyObj.AddComponent<CharacterEntity>();
+                newHero.SetUpEntity(heroData);
+                activeAllies.Add(newHero);
             }
         }
     }
@@ -361,7 +359,7 @@ public class BattleManager : MonoBehaviour
         plannedMove.target = target;
         plannedMove.speed = attacker.CombatData.Speed;
 
-        plannedMove.ExecuteActionLogic = () => plannedMove.target.TakeDamage(Damage);
+        plannedMove.ExecuteActionLogic = () => plannedMove.target.TakeDamage(attacker.CombatData.AttackPower);
 
         RegisterPlayerAction(plannedMove);
     }

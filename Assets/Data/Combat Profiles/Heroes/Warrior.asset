@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4a0347ae4511ad46950556e38911d82, type: 3}
   m_Name: Warrior
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
-  entityName: 
-  maxHealth: 0
-  attackPower: 0
-  speed: 0
-  startingLevel: 0
+  entityName: Warrior
+  maxHealth: 100
+  attackPower: 10
+  speed: 10
+  startingLevel: 1
   startingXP: 0

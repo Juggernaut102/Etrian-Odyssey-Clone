@@ -37,8 +37,8 @@ public class PartyManager : MonoBehaviour
     [Header("Party Configuration")]
     [SerializeField] private CharacterProfile[] startingPartyBlueprints;    // assign in inspector with the base character profiles for the starting party members
     [SerializeField] private int maxPartySize = 5; // Maximum number of characters allowed in the party
-    public List<CharacterRuntimeData> LivePartyData { get; private set; }
-
+    [SerializeField] private List<CharacterRuntimeData> livePartyData;
+    public List<CharacterRuntimeData> LivePartyData => livePartyData;
     private void Awake()
     {
         if (instance == null)
@@ -58,28 +58,28 @@ public class PartyManager : MonoBehaviour
     private void InitializeParty()
     {
         // Initialize the empty list
-        LivePartyData = new List<CharacterRuntimeData>();
+        livePartyData = new List<CharacterRuntimeData>();
 
         for (int i = 0; i < startingPartyBlueprints.Length; i++)
         {
             // Safety check: Don't exceed max party size during setup!
-            if (startingPartyBlueprints[i] != null && LivePartyData.Count < maxPartySize)
+            if (startingPartyBlueprints[i] != null && livePartyData.Count < maxPartySize)
             {
                 CharacterRuntimeData newData = new CharacterRuntimeData();
                 newData.Initialize(startingPartyBlueprints[i]);
 
-                LivePartyData.Add(newData);
+                livePartyData.Add(newData);
             }
         }
     }
 
     public void RecruitCharacter(CharacterProfile newRecruitBlueprint)
     {
-        if (LivePartyData.Count < maxPartySize)
+        if (livePartyData.Count < maxPartySize)
         {
             CharacterRuntimeData newData = new CharacterRuntimeData();
             newData.Initialize(newRecruitBlueprint);
-            LivePartyData.Add(newData);
+            livePartyData.Add(newData);
             Debug.Log($"{newData.EntityName} joined the party!");
         }
         else
