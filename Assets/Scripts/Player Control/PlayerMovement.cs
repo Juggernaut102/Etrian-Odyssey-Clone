@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +11,8 @@ public class PlayerMovement : GridMovement
     private Vector2 inputVector;
     private bool isInputHeld = false;
     private Coroutine movementRoutine;
+
+    public event Action OnStepComplete; // Event triggered after each movement step is completed
 
     protected override void Awake()
     {
@@ -99,10 +102,7 @@ public class PlayerMovement : GridMovement
             {
                 this.PreviousGridPosition = this.CurrentGridPosition; // Store the current grid position before moving
                 StartCoroutine(MoveEntity(targetPosition));
-                OnMovementComplete(new Vector2Int(
-                    Mathf.RoundToInt(targetPosition.x / 4),
-                    Mathf.RoundToInt(targetPosition.z / 4)));
-            }
+                }
         }
         else if (Mathf.Abs(inputVector.x) > 0.5f)
         {
@@ -146,6 +146,7 @@ public class PlayerMovement : GridMovement
     protected override void OnMovementComplete(Vector2Int pos)
     {
         base.OnMovementComplete(pos);
+        OnStepComplete?.Invoke();   // Trigger step complete event for minimap update, encounter checks, map event checks etc.
         GameManager.Instance.ProcessGlobalTurnTick(); // Notify GameManager to advance the turn after each move
         // GameManager.Instance.CheckForRandomEncounters(); // Check for random encounters after each move
     }

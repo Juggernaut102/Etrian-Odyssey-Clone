@@ -42,6 +42,9 @@ public abstract class GridMovement : MonoBehaviour
 
         transform.position = targetPosition; // Snap perfectly to grid anchor
         IsMoving = false;
+        OnMovementComplete(new Vector2Int(
+                    Mathf.RoundToInt(targetPosition.x / 4),
+                    Mathf.RoundToInt(targetPosition.z / 4)));
     }
 
     private void UpdateCurrentGridPosition(Vector2Int pos)
