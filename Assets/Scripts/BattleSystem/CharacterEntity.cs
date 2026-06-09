@@ -4,11 +4,11 @@ using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 using static UnityEngine.GraphicsBuffer;
 
-public class PlayerEntity : BattleEntity
+public class CharacterEntity : BattleEntity
 {
     public override void Initialize(CombatProfile profile)
     {
-        if (profile is PlayerProfile character)
+        if (profile is CharacterProfile character)
         {
             entityName = character.EntityName;
             maxHealth = character.MaxHealth;

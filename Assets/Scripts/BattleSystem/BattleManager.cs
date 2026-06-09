@@ -61,7 +61,7 @@ public class BattleManager : MonoBehaviour
     private AudioListener dungeonListener; // Reference to the main audio listener to turn it off during battle
 
     [Header("Roster")]
-    [SerializeField] private List<PlayerEntity> activeAllies = new List<PlayerEntity>();
+    [SerializeField] private List<CharacterEntity> activeAllies = new List<CharacterEntity>();
     [SerializeField] private List<EnemyEntity> activeEnemies = new List<EnemyEntity>();
 
     [Header("Spawning Anchors")]
@@ -119,8 +119,8 @@ public class BattleManager : MonoBehaviour
         // e.g., List<PlayerProfile> currentParty = PartyManager.Instance.GetActiveParty();
 
         // For now, let's find any existing PlayerEntity scripts already sitting in combat scene asset:
-        PlayerEntity[] sceneHeroes = FindObjectsByType<PlayerEntity>(FindObjectsSortMode.None);
-        foreach (PlayerEntity hero in sceneHeroes)
+        CharacterEntity[] sceneHeroes = FindObjectsByType<CharacterEntity>(FindObjectsSortMode.None);
+        foreach (CharacterEntity hero in sceneHeroes)
         {
             // If they are alive, register them to act this turn round!
             if (hero.IsAlive())

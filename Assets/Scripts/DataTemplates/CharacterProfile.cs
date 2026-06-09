@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PlayerProfile", menuName = "Scriptable Objects/CombatProfile/PlayerProfile")]
-public class PlayerProfile : CombatProfile
+public class CharacterProfile : CombatProfile
 {
-    [Header("Player-Specific Data")]
+    [Header("Character-Specific Data")]
     [SerializeField] private int currentLevel;
     [SerializeField] private int currentXP;
 
