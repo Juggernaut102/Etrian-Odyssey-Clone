@@ -7,11 +7,12 @@ public class EnemyEntity : BattleEntity
 {
     public override void Initialize(CombatProfile profile)
     {
+        base.Initialize(profile);
         if (profile is EnemyProfile monster)
         {
             entityName = monster.EntityName;
             maxHealth = monster.MaxHealth;
-            currentHealth = maxHealth; // Start at full health
+            currentHealth = monster.CurrentHealth;
             attackPower = monster.AttackPower;
             speed = monster.Speed;
         }
@@ -35,9 +36,9 @@ public class EnemyEntity : BattleEntity
         return plannedMove;
     }
 
-    public override void Die()
+    protected override void HandleDeath()
     {
-        base.Die();
+        base.HandleDeath();
         Destroy(gameObject); // Destroy the enemy game object when it dies
     }
 }

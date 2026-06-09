@@ -13,6 +13,7 @@ public abstract class BattleEntity : MonoBehaviour
     [SerializeField] protected int currentHealth;
     [SerializeField] protected int attackPower;
     [SerializeField] protected int speed;
+    protected CombatProfile combatProfile;
 
     public string EntityName => entityName;
     public int MaxHealth => maxHealth;
@@ -20,27 +21,32 @@ public abstract class BattleEntity : MonoBehaviour
     public int AttackPower => attackPower;
     public int Speed => speed;
 
-    public abstract void Initialize(CombatProfile profile);
-
-    public bool IsAlive()
+    private void OnEnable()
     {
-        return currentHealth > 0;
+        combatProfile.OnDeath += HandleDeath;
     }
 
-    public void TakeDamage(int dmg)
+    private void OnDisable()
     {
-        currentHealth = Mathf.Max(0, currentHealth - dmg);
-        Debug.Log($"Damage taken by {entityName}: {dmg}");
-        if (!IsAlive())
-        {
-            Die();
-        }
+        combatProfile.OnDeath -= HandleDeath;
     }
 
-    public virtual void Die()
+    public virtual void Initialize(CombatProfile profile)
     {
-        Debug.Log($"{entityName} has died.");
+        combatProfile = profile;
+    }
+
+    public bool IsAlive() => combatProfile != null && combatProfile.IsAlive;
+
+    protected virtual void HandleDeath()
+    {
         // Additional death logic can be added here, such as playing an animation, dropping loot, etc.
+        Debug.Log($"[VISUAL] {entityName}'s body is dying.");
+    }
+
+    public void TakeDamage(int damage)
+    {
+        combatProfile.TakeDamage(damage);
     }
 
     // We use IEnumerable here to allow for flexible input of opponents, whether it is PlayerEntity or EnemyEntity, as long as they are BattleEntities

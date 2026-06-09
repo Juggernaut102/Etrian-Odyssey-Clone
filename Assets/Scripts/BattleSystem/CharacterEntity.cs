@@ -8,11 +8,12 @@ public class CharacterEntity : BattleEntity
 {
     public override void Initialize(CombatProfile profile)
     {
+        base.Initialize(profile);
         if (profile is CharacterProfile character)
         {
             entityName = character.EntityName;
             maxHealth = character.MaxHealth;
-            currentHealth = maxHealth; // Start at full health
+            currentHealth = character.CurrentHealth;
             attackPower = character.AttackPower;
             speed = character.Speed;
         }
