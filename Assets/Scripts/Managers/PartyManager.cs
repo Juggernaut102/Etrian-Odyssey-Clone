@@ -1,0 +1,90 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+// Singleton manager responsible for handling the player's party of characters, including their stats, inventory, and other related data.
+// It ensures that the party information persists across scenes and can be accessed globally throughout the game.
+public class PartyManager : MonoBehaviour
+{
+    private static PartyManager instance;
+
+    // Property to access the singleton instance of PartyManager. If it doesn't exist, it will attempt to find one in the scene or create a new one from a prefab.
+    public static PartyManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindFirstObjectByType<PartyManager>();
+                if (instance == null)
+                {
+                    GameObject prefab = Resources.Load<GameObject>("GameRoot");
+                    if (prefab != null)
+                    {
+                        GameObject obj = Instantiate(prefab);
+                        instance = obj.GetComponent<PartyManager>();
+                    }
+                    else
+                    {
+                        Debug.Log("Can't find GameRoot prefab in Resources folder! Please create one and add the PartyManager component to it.");
+                    }
+                }
+            }
+            return instance;
+        }
+    }
+
+    [Header("Party Configuration")]
+    [SerializeField] private CharacterProfile[] startingPartyBlueprints;    // assign in inspector with the base character profiles for the starting party members
+    [SerializeField] private int maxPartySize = 5; // Maximum number of characters allowed in the party
+    public List<CharacterRuntimeData> LivePartyData { get; private set; }
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject); // Persist across scenes
+
+            InitializeParty();
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
+    private void InitializeParty()
+    {
+        // Initialize the empty list
+        LivePartyData = new List<CharacterRuntimeData>();
+
+        for (int i = 0; i < startingPartyBlueprints.Length; i++)
+        {
+            // Safety check: Don't exceed max party size during setup!
+            if (startingPartyBlueprints[i] != null && LivePartyData.Count < maxPartySize)
+            {
+                CharacterRuntimeData newData = new CharacterRuntimeData();
+                newData.Initialize(startingPartyBlueprints[i]);
+
+                LivePartyData.Add(newData);
+            }
+        }
+    }
+
+    public void RecruitCharacter(CharacterProfile newRecruitBlueprint)
+    {
+        if (LivePartyData.Count < maxPartySize)
+        {
+            CharacterRuntimeData newData = new CharacterRuntimeData();
+            newData.Initialize(newRecruitBlueprint);
+            LivePartyData.Add(newData);
+            Debug.Log($"{newData.EntityName} joined the party!");
+        }
+        else
+        {
+            Debug.Log("The party is full!");
+        }
+    }
+}

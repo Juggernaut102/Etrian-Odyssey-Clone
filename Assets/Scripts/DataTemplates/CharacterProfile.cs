@@ -4,9 +4,9 @@ using UnityEngine;
 public class CharacterProfile : CombatProfile
 {
     [Header("Character-Specific Data")]
-    [SerializeField] private int currentLevel;
-    [SerializeField] private int currentXP;
+    [SerializeField] private int startingLevel;
+    [SerializeField] private int startingXP;
 
-    public int CurrentLevel => currentLevel;
-    public int CurrentXP => currentXP;
+    public int StartingLevel => startingLevel;
+    public int StartingXP => startingXP;
 }

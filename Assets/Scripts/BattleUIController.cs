@@ -126,7 +126,7 @@ public class BattleUIController : MonoBehaviour
             return;
         }
         battleCam = BattleManager.Instance.BattleCamera;
-        Debug.Log($"UI: {currentAttacker.EntityName} chose Attack! Now click on a target enemy...");
+        Debug.Log($"UI: {currentAttacker.CombatData.EntityName} chose Attack! Now click on a target enemy...");
 
         // Open the targeting system! Enable click detection on enemy sprites.
         EnterTargetSelectionMode();
@@ -141,7 +141,7 @@ public class BattleUIController : MonoBehaviour
         if (currentUiState != UIState.SelectingTarget) return;
 
         currentTarget = clickedEnemy;
-        Debug.Log($"UI: Target selected: {currentTarget.EntityName}");
+        Debug.Log($"UI: Target selected: {currentTarget.CombatData.EntityName}");
 
         visual.ToggleHighlight(false);
 

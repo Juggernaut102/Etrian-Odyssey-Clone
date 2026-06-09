@@ -233,6 +233,7 @@ GameObject:
   - component: {fileID: 4331882327405814243}
   - component: {fileID: 2223357500438902484}
   - component: {fileID: 2469238877207987209}
+  - component: {fileID: 5665683084857317644}
   - component: {fileID: 5880114827765906712}
   m_Layer: 0
   m_Name: GameRoot
@@ -314,6 +315,21 @@ MonoBehaviour:
   explorationPanel: {fileID: 4413041157007967869}
   battlePanel: {fileID: 762334832045399035}
   menuPanel: {fileID: 5076917105855637213}
+--- !u!114 &5665683084857317644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226390633663709700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a204cd8e5889c54458dd84d34f3f0134, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartyManager
+  startingPartyBlueprints:
+  - {fileID: 11400000, guid: 55cad66dfeeb27d4abdb87794bfcc5c2, type: 2}
+  maxPartySize: 5
 --- !u!114 &5880114827765906712
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,22 +3,15 @@ using System.Linq;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class EnemyEntity : BattleEntity
+public class EnemyEntity : BattleEntity, IAIControlled
 {
-    public override void Initialize(CombatProfile profile)
+    protected override void HandleDeath()
     {
-        base.Initialize(profile);
-        if (profile is EnemyProfile monster)
-        {
-            entityName = monster.EntityName;
-            maxHealth = monster.MaxHealth;
-            currentHealth = monster.CurrentHealth;
-            attackPower = monster.AttackPower;
-            speed = monster.Speed;
-        }
+        base.HandleDeath();
+        Destroy(gameObject); // Destroy the enemy game object when it dies
     }
 
-    public override CombatAction CalculateTurnAction(IEnumerable<BattleEntity> players)
+    public CombatAction CalculateTurnAction(IEnumerable<BattleEntity> players)
     {
         if (players == null || players.Count() == 0) return null;
 
@@ -29,16 +22,10 @@ public class EnemyEntity : BattleEntity
         plannedMove.actionName = "Basic Strike";
         plannedMove.user = this;
         plannedMove.target = target;
-        plannedMove.speed = this.speed;
+        plannedMove.speed = CombatData.Speed;
 
-        plannedMove.ExecuteActionLogic = () => target.TakeDamage(attackPower);
+        plannedMove.ExecuteActionLogic = () => target.TakeDamage(CombatData.AttackPower);
 
         return plannedMove;
-    }
-
-    protected override void HandleDeath()
-    {
-        base.HandleDeath();
-        Destroy(gameObject); // Destroy the enemy game object when it dies
     }
 }

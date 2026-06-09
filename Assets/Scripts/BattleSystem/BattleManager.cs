@@ -189,7 +189,9 @@ public class BattleManager : MonoBehaviour
                 continue;
             }
 
-            enemyActor.Initialize(currentEnemyProfile);
+            EnemyRuntimeData newData = new EnemyRuntimeData();
+            newData.Initialize(currentEnemyProfile);
+            enemyActor.SetUpEntity(newData);
             activeEnemies.Add(enemyActor);
         }
     }
@@ -262,11 +264,18 @@ public class BattleManager : MonoBehaviour
 
         foreach (BattleEntity enemy in activeEnemies)
         {
-            CombatAction enemyAction = enemy.CalculateTurnAction(activeAllies);
-            if (enemyAction != null)
+            if (enemy is IAIControlled aiEnemy)
             {
-                actionTurnQueue.Add(enemyAction);
-                Debug.Log($"Enemy Action: {enemy.name} will use {enemyAction.actionName}.");
+                CombatAction enemyAction = aiEnemy.CalculateTurnAction(activeAllies);
+                if (enemyAction != null)
+                {
+                    actionTurnQueue.Add(enemyAction);
+                    Debug.Log($"Enemy Action: {enemy.CombatData.EntityName} will use {enemyAction.actionName}.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Warning: {enemy.name} is in the enemy list but has no AI!");
             }
         }
         ResolveBattleTurn();
@@ -350,7 +359,7 @@ public class BattleManager : MonoBehaviour
         plannedMove.actionName = "Basic Strike";
         plannedMove.user = attacker;
         plannedMove.target = target;
-        plannedMove.speed = attacker.Speed;
+        plannedMove.speed = attacker.CombatData.Speed;
 
         plannedMove.ExecuteActionLogic = () => plannedMove.target.TakeDamage(Damage);
 

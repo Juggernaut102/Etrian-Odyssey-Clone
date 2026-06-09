@@ -6,22 +6,5 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CharacterEntity : BattleEntity
 {
-    public override void Initialize(CombatProfile profile)
-    {
-        base.Initialize(profile);
-        if (profile is CharacterProfile character)
-        {
-            entityName = character.EntityName;
-            maxHealth = character.MaxHealth;
-            currentHealth = character.CurrentHealth;
-            attackPower = character.AttackPower;
-            speed = character.Speed;
-        }
-        
-    }
 
-    public override CombatAction CalculateTurnAction(IEnumerable<BattleEntity> enemies)
-    {
-        return null; // Player action is determined by player input, so this method can return null or be left unimplemented
-    }
 }
