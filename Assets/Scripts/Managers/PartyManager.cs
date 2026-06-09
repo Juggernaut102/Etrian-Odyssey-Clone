@@ -70,7 +70,7 @@ public class PartyManager : MonoBehaviour
             {
                 CharacterRuntimeData newData = new CharacterRuntimeData();
                 newData.Initialize(startingPartyBlueprints[i]);
-
+                newData.OnDeath += CheckForPartyWipe;
                 livePartyData.Add(newData);
             }
         }
@@ -82,6 +82,7 @@ public class PartyManager : MonoBehaviour
         {
             CharacterRuntimeData newData = new CharacterRuntimeData();
             newData.Initialize(newRecruitBlueprint);
+            newData.OnDeath += CheckForPartyWipe;
             livePartyData.Add(newData);
             Debug.Log($"{newData.EntityName} joined the party!");
         }
@@ -112,5 +113,14 @@ public class PartyManager : MonoBehaviour
     {
         currentGold += amount;
         Debug.Log($"Party found {amount} Gold.");
+    }
+
+    private void CheckForPartyWipe()
+    {
+        if (AlivePartyCount == 0)
+        {
+            Debug.Log("All party members have fallen! Game Over.");
+            GameManager.Instance.GameOver();
+        }
     }
 }

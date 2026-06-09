@@ -386,7 +386,7 @@ public class BattleManager : MonoBehaviour
     {
         Debug.Log("Player has lost the battle! What a noob! Exiting Battle Scene!");
         CleanUpBatleScene();
-        GameManager.Instance.GameOver(); // Notify GameManager to trigger game over state
+        // GameOver state will be called by PartyManager when it checks for party wipes.
     }
 
     private bool IsPlayerDefeated() => activeAllies.Count == 0;

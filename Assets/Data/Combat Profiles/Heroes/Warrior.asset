@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterProfile
   entityName: Warrior
   maxHealth: 100
-  attackPower: 10
+  attackPower: 50
   speed: 10
   startingLevel: 1
   startingXP: 0

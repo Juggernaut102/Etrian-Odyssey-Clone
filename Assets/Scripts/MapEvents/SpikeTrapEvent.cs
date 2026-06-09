@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SpikeTrapEvent : MonoBehaviour, ISteppable
@@ -6,8 +7,13 @@ public class SpikeTrapEvent : MonoBehaviour, ISteppable
 
     public void OnStep()
     {
-        Debug.Log($"Spike trap triggered! Takes {damage} damage!");
-        // damage logic here
+        List<CharacterRuntimeData> party = PartyManager.Instance.LivePartyData;
+        foreach ( CharacterRuntimeData data in party )
+        {
+            data.TakeDamage(damage);
+            Debug.Log($"Spike trap triggered! {data.EntityName} takes {damage} damage!");
+        }
+
         // play animation, sound effects etc. for spike trap triggering here
     }
 }
