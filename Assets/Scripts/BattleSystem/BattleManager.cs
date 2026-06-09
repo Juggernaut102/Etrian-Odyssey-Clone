@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
@@ -74,6 +75,10 @@ public class BattleManager : MonoBehaviour
     private BattleEntity currentAlly;
     private List<CombatAction> actionTurnQueue = new List<CombatAction>(); // List to hold all combat actions chosen by player and enemies during the turn, which will be sorted and resolved at the end of the turn
 
+    [Header("Reward Tracking")]
+    private int accumulatedXP = 0;
+    private int accumulatedGold = 0;
+
     private void Awake()
     {
         if (instance == null)
@@ -90,6 +95,9 @@ public class BattleManager : MonoBehaviour
     public void InitializeBattle(EncounterProfile enemyTroop)
     {
         currentBattleState = BattleState.Initializing;
+
+        accumulatedXP = 0;
+        accumulatedGold = 0;
 
         InitializeBattleCameraAndAudio();
 
@@ -123,6 +131,7 @@ public class BattleManager : MonoBehaviour
                 emptyObj.transform.SetParent(allySpawnPoint);
                 CharacterEntity newHero = emptyObj.AddComponent<CharacterEntity>();
                 newHero.SetUpEntity(heroData);
+                newHero.CombatData.OnDeath += () => HandleCombatantDeath(newHero);
                 activeAllies.Add(newHero);
             }
         }
@@ -190,6 +199,7 @@ public class BattleManager : MonoBehaviour
             EnemyRuntimeData newData = new EnemyRuntimeData();
             newData.Initialize(currentEnemyProfile);
             enemyActor.SetUpEntity(newData);
+            enemyActor.CombatData.OnDeath += () => HandleCombatantDeath(enemyActor);
             activeEnemies.Add(enemyActor);
         }
     }
@@ -290,41 +300,76 @@ public class BattleManager : MonoBehaviour
         actionTurnQueue = actionTurnQueue.OrderByDescending(action => action.speed).ToList(); // Sort actions by speed (descending order, so higher speed goes first)
         foreach (CombatAction action in actionTurnQueue)
         {
+            // Check if the previous attack ended the battle
+            if (HasPlayerWon() || IsPlayerDefeated())
+            {
+                Debug.Log("Battle end conditions met mid-turn! Halting the queue.");
+                break;
+            }
+            // Check if the user died before this action triggered
             if (action.user == null || !action.user.IsAlive())
             {
                 Debug.Log("Action skipped: " + action.user?.name + " is already defeated.");
                 continue;
             }
+            // Check if the target died before this action triggered
+            if (action.target == null || !action.target.IsAlive())
+            {
+                Debug.Log($"Action failed: {action.user.CombatData.EntityName}'s target is already dead!");
+                continue;
+            }
             Debug.Log($"Executing action: {action.user.name} uses {action.actionName} on {action.target.name}.");
             action.ExecuteActionLogic?.Invoke(); // Execute the logic for this action, which will apply its effects to the game state (damage, status effects, etc.)
-
-            // Sweeps the list and removes any element where the Unity object has been destroyed
-            activeAllies.RemoveAll(ally => ally == null || !ally.IsAlive());
-            activeEnemies.RemoveAll(enemy => enemy == null || !enemy.IsAlive());
-
-            if (IsPlayerDefeated())
-            {
-                OnBattleLoss();
-                return;
-            }
-
-            if (HasPlayerWon())
-            {
-                Win();
-                return;
-            }
         }
         actionTurnQueue.Clear();
 
-        currentTurn++;
-        GameManager.Instance.ProcessGlobalTurnTick();
+        if (!HasPlayerWon() && !IsPlayerDefeated())
+        {
+            currentTurn++;
+            GameManager.Instance.ProcessGlobalTurnTick();
+            Debug.Log("Combat turn resolved. Current combat turn: " + currentTurn);
+        }
 
-        Debug.Log("Combat turn resolved. Current combat turn: " + currentTurn);
+
+    }
+
+    // Listens to death events from all combatants to know when someone dies, so we can remove them from the turn order and check for end of battle conditions
+    private void HandleCombatantDeath(BattleEntity deadEntity)
+    {
+        Debug.Log($"{deadEntity.CombatData.EntityName} has fallen!");
+
+        if (activeAllies.Contains(deadEntity) && deadEntity is CharacterEntity fallenAlly)
+        {
+            activeAllies.Remove(fallenAlly);
+        }
+        else if (activeEnemies.Contains(deadEntity) && deadEntity is EnemyEntity fallenEnemy)
+        {
+            activeEnemies.Remove(fallenEnemy);
+
+            // Add XP/Gold into the running tally pool
+            if (deadEntity.CombatData is EnemyRuntimeData enemyData)
+            {
+                accumulatedXP += enemyData.XpReward;
+                accumulatedGold += enemyData.GoldReward;
+            }
+        }
+
+        // Check for victory/defeat
+        if (IsPlayerDefeated())
+        {
+            OnBattleLoss();
+        }
+        else if (HasPlayerWon())
+        {
+            Win();
+        }
     }
 
     public void Win()
     {
         Debug.Log("Player has won the battle! Exiting Battle Scene!");
+        PartyManager.Instance.AssignXP(accumulatedXP);
+        PartyManager.Instance.AddGold(accumulatedGold);
         CleanUpBatleScene();
         GameManager.Instance.ExitBattle(true); // Notify GameManager to return to exploration mode
     }

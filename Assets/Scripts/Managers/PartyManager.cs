@@ -39,6 +39,9 @@ public class PartyManager : MonoBehaviour
     [SerializeField] private int maxPartySize = 5; // Maximum number of characters allowed in the party
     [SerializeField] private List<CharacterRuntimeData> livePartyData;
     public List<CharacterRuntimeData> LivePartyData => livePartyData;
+    public int AlivePartyCount => livePartyData.Count(data => data.IsAlive);
+    private int currentGold = 0;
+
     private void Awake()
     {
         if (instance == null)
@@ -86,5 +89,28 @@ public class PartyManager : MonoBehaviour
         {
             Debug.Log("The party is full!");
         }
+    }
+
+    public void AssignXP(int totalXPAmount)
+    {
+        int aliveCount = AlivePartyCount;
+
+        if (aliveCount == 0) return;
+        
+        int splitXP = totalXPAmount / aliveCount;
+        foreach (CharacterRuntimeData heroData in livePartyData)
+        {
+            if (heroData != null && heroData.IsAlive)
+            {
+                heroData.GainXP(splitXP);
+                Debug.Log($"{heroData.EntityName} earned {splitXP} XP!");
+            }
+        }
+    }
+
+    public void AddGold(int amount)
+    {
+        currentGold += amount;
+        Debug.Log($"Party found {amount} Gold.");
     }
 }

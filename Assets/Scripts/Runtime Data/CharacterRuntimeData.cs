@@ -19,4 +19,10 @@ public class CharacterRuntimeData : CombatRuntimeData
         }
 
     }
+
+    public void GainXP(int xp)
+    {
+        currentXP += xp;
+        Debug.Log($"{EntityName} gained {xp} XP! Total XP: {currentXP}");
+    }
 }
